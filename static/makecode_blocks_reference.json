@@ -1,0 +1,3150 @@
+{
+  "_meta": {
+    "source": "Bedrock Edition data values + MakeCode pxt-minecraft constant naming conventions",
+    "reference_url": "https://minecraft.makecode.com/reference/blocks",
+    "bedrock_data_values_url": "https://minecraft.fandom.com/wiki/Bedrock_Edition_data_values",
+    "naming_rule": "Bedrock snake_case ID → UPPER_SNAKE_CASE in MakeCode Python. Use UPPER_SNAKE_CASE constants directly in code, never string literals.",
+    "note": "Block IDs above 255 are Education Edition or newer additions. Some constants have naming exceptions documented per entry.",
+    "usage": "blocks.place(GRASS, pos(0,0,0))  |  blocks.fill(STONE, pos(0,0,0), pos(5,5,5), FillOperation.REPLACE)"
+  },
+  "blocks": {
+    "natural_terrain": [
+      {
+        "constant": "AIR",
+        "bedrock_id": "air",
+        "numeric_id": 0,
+        "display_name": "Air",
+        "notes": "Empty/clear block"
+      },
+      {
+        "constant": "STONE",
+        "bedrock_id": "stone",
+        "numeric_id": 1,
+        "display_name": "Stone",
+        "variants": {
+          "0": "Stone",
+          "1": "Granite",
+          "2": "Polished Granite",
+          "3": "Diorite",
+          "4": "Polished Diorite",
+          "5": "Andesite",
+          "6": "Polished Andesite"
+        },
+        "notes": "Use blockWithData(STONE, 1) for granite etc."
+      },
+      {
+        "constant": "GRASS",
+        "bedrock_id": "grass",
+        "numeric_id": 2,
+        "display_name": "Grass Block"
+      },
+      {
+        "constant": "DIRT",
+        "bedrock_id": "dirt",
+        "numeric_id": 3,
+        "display_name": "Dirt",
+        "variants": {
+          "0": "Dirt",
+          "1": "Coarse Dirt",
+          "2": "Podzol"
+        }
+      },
+      {
+        "constant": "COBBLESTONE",
+        "bedrock_id": "cobblestone",
+        "numeric_id": 4,
+        "display_name": "Cobblestone"
+      },
+      {
+        "constant": "SAND",
+        "bedrock_id": "sand",
+        "numeric_id": 12,
+        "display_name": "Sand",
+        "variants": {
+          "0": "Sand",
+          "1": "Red Sand"
+        }
+      },
+      {
+        "constant": "GRAVEL",
+        "bedrock_id": "gravel",
+        "numeric_id": 13,
+        "display_name": "Gravel"
+      },
+      {
+        "constant": "BEDROCK",
+        "bedrock_id": "bedrock",
+        "numeric_id": 7,
+        "display_name": "Bedrock"
+      },
+      {
+        "constant": "WATER",
+        "bedrock_id": "water",
+        "numeric_id": 8,
+        "display_name": "Water (flowing)"
+      },
+      {
+        "constant": "STATIONARY_WATER",
+        "bedrock_id": "flowing_water",
+        "numeric_id": 9,
+        "display_name": "Water (still)"
+      },
+      {
+        "constant": "LAVA",
+        "bedrock_id": "lava",
+        "numeric_id": 10,
+        "display_name": "Lava (flowing)"
+      },
+      {
+        "constant": "STATIONARY_LAVA",
+        "bedrock_id": "flowing_lava",
+        "numeric_id": 11,
+        "display_name": "Lava (still)"
+      },
+      {
+        "constant": "GRAVEL",
+        "bedrock_id": "gravel",
+        "numeric_id": 13,
+        "display_name": "Gravel"
+      },
+      {
+        "constant": "CLAY",
+        "bedrock_id": "clay",
+        "numeric_id": 82,
+        "display_name": "Clay"
+      },
+      {
+        "constant": "MYCELIUM",
+        "bedrock_id": "mycelium",
+        "numeric_id": 110,
+        "display_name": "Mycelium"
+      },
+      {
+        "constant": "SNOW",
+        "bedrock_id": "snow",
+        "numeric_id": 80,
+        "display_name": "Snow Layer",
+        "notes": "Snow layer on ground"
+      },
+      {
+        "constant": "SNOW_BLOCK",
+        "bedrock_id": "snow_block",
+        "numeric_id": 78,
+        "display_name": "Snow Block"
+      },
+      {
+        "constant": "ICE",
+        "bedrock_id": "ice",
+        "numeric_id": 79,
+        "display_name": "Ice"
+      },
+      {
+        "constant": "PACKED_ICE",
+        "bedrock_id": "packed_ice",
+        "numeric_id": 174,
+        "display_name": "Packed Ice"
+      },
+      {
+        "constant": "BLUE_ICE",
+        "bedrock_id": "blue_ice",
+        "numeric_id": 266,
+        "display_name": "Blue Ice"
+      },
+      {
+        "constant": "SOUL_SAND",
+        "bedrock_id": "soul_sand",
+        "numeric_id": 88,
+        "display_name": "Soul Sand"
+      },
+      {
+        "constant": "NETHERRACK",
+        "bedrock_id": "netherrack",
+        "numeric_id": 87,
+        "display_name": "Netherrack"
+      },
+      {
+        "constant": "NETHER_BRICK",
+        "bedrock_id": "nether_brick",
+        "numeric_id": 112,
+        "display_name": "Nether Brick"
+      },
+      {
+        "constant": "END_STONE",
+        "bedrock_id": "end_stone",
+        "numeric_id": 121,
+        "display_name": "End Stone"
+      },
+      {
+        "constant": "OBSIDIAN",
+        "bedrock_id": "obsidian",
+        "numeric_id": 49,
+        "display_name": "Obsidian"
+      },
+      {
+        "constant": "MAGMA",
+        "bedrock_id": "magma",
+        "numeric_id": 213,
+        "display_name": "Magma Block"
+      },
+      {
+        "constant": "PODZOL",
+        "bedrock_id": "dirt",
+        "numeric_id": 3,
+        "display_name": "Podzol",
+        "notes": "blockWithData(DIRT, 2)"
+      },
+      {
+        "constant": "COARSE_DIRT",
+        "bedrock_id": "dirt",
+        "numeric_id": 3,
+        "display_name": "Coarse Dirt",
+        "notes": "blockWithData(DIRT, 1)"
+      }
+    ],
+    "stone_and_ores": [
+      {
+        "constant": "COAL_ORE",
+        "bedrock_id": "coal_ore",
+        "numeric_id": 16,
+        "display_name": "Coal Ore"
+      },
+      {
+        "constant": "IRON_ORE",
+        "bedrock_id": "iron_ore",
+        "numeric_id": 15,
+        "display_name": "Iron Ore"
+      },
+      {
+        "constant": "GOLD_ORE",
+        "bedrock_id": "gold_ore",
+        "numeric_id": 14,
+        "display_name": "Gold Ore"
+      },
+      {
+        "constant": "DIAMOND_ORE",
+        "bedrock_id": "diamond_ore",
+        "numeric_id": 56,
+        "display_name": "Diamond Ore"
+      },
+      {
+        "constant": "LAPIS_ORE",
+        "bedrock_id": "lapis_ore",
+        "numeric_id": 21,
+        "display_name": "Lapis Lazuli Ore"
+      },
+      {
+        "constant": "REDSTONE_ORE",
+        "bedrock_id": "redstone_ore",
+        "numeric_id": 73,
+        "display_name": "Redstone Ore"
+      },
+      {
+        "constant": "EMERALD_ORE",
+        "bedrock_id": "emerald_ore",
+        "numeric_id": 129,
+        "display_name": "Emerald Ore"
+      },
+      {
+        "constant": "NETHER_QUARTZ_ORE",
+        "bedrock_id": "quartz_ore",
+        "numeric_id": 153,
+        "display_name": "Nether Quartz Ore"
+      },
+      {
+        "constant": "ANCIENT_DEBRIS",
+        "bedrock_id": "ancient_debris",
+        "numeric_id": 526,
+        "display_name": "Ancient Debris"
+      },
+      {
+        "constant": "DEEPSLATE",
+        "bedrock_id": "deepslate",
+        "numeric_id": 633,
+        "display_name": "Deepslate"
+      },
+      {
+        "constant": "COBBLED_DEEPSLATE",
+        "bedrock_id": "cobbled_deepslate",
+        "numeric_id": 634,
+        "display_name": "Cobbled Deepslate"
+      },
+      {
+        "constant": "DEEPSLATE_COAL_ORE",
+        "bedrock_id": "deepslate_coal_ore",
+        "numeric_id": 658,
+        "display_name": "Deepslate Coal Ore"
+      },
+      {
+        "constant": "DEEPSLATE_IRON_ORE",
+        "bedrock_id": "deepslate_iron_ore",
+        "numeric_id": 659,
+        "display_name": "Deepslate Iron Ore"
+      },
+      {
+        "constant": "DEEPSLATE_GOLD_ORE",
+        "bedrock_id": "deepslate_gold_ore",
+        "numeric_id": 660,
+        "display_name": "Deepslate Gold Ore"
+      },
+      {
+        "constant": "DEEPSLATE_DIAMOND_ORE",
+        "bedrock_id": "deepslate_diamond_ore",
+        "numeric_id": 661,
+        "display_name": "Deepslate Diamond Ore"
+      },
+      {
+        "constant": "DEEPSLATE_EMERALD_ORE",
+        "bedrock_id": "deepslate_emerald_ore",
+        "numeric_id": 663,
+        "display_name": "Deepslate Emerald Ore"
+      },
+      {
+        "constant": "DEEPSLATE_LAPIS_ORE",
+        "bedrock_id": "deepslate_lapis_ore",
+        "numeric_id": 664,
+        "display_name": "Deepslate Lapis Ore"
+      },
+      {
+        "constant": "DEEPSLATE_REDSTONE_ORE",
+        "bedrock_id": "deepslate_redstone_ore",
+        "numeric_id": 665,
+        "display_name": "Deepslate Redstone Ore"
+      }
+    ],
+    "building_blocks": [
+      {
+        "constant": "OAK_WOOD_PLANKS",
+        "bedrock_id": "planks",
+        "numeric_id": 5,
+        "display_name": "Oak Planks",
+        "notes": "blockWithData(PLANKS, 0). PLANKS constant also works"
+      },
+      {
+        "constant": "SPRUCE_WOOD_PLANKS",
+        "bedrock_id": "planks",
+        "numeric_id": 5,
+        "display_name": "Spruce Planks",
+        "notes": "blockWithData(PLANKS, 1)"
+      },
+      {
+        "constant": "BIRCH_WOOD_PLANKS",
+        "bedrock_id": "planks",
+        "numeric_id": 5,
+        "display_name": "Birch Planks",
+        "notes": "blockWithData(PLANKS, 2)"
+      },
+      {
+        "constant": "JUNGLE_WOOD_PLANKS",
+        "bedrock_id": "planks",
+        "numeric_id": 5,
+        "display_name": "Jungle Planks",
+        "notes": "blockWithData(PLANKS, 3)"
+      },
+      {
+        "constant": "ACACIA_WOOD_PLANKS",
+        "bedrock_id": "planks",
+        "numeric_id": 5,
+        "display_name": "Acacia Planks",
+        "notes": "blockWithData(PLANKS, 4)"
+      },
+      {
+        "constant": "DARK_OAK_WOOD_PLANKS",
+        "bedrock_id": "planks",
+        "numeric_id": 5,
+        "display_name": "Dark Oak Planks",
+        "notes": "blockWithData(PLANKS, 5)"
+      },
+      {
+        "constant": "BRICK_BLOCK",
+        "bedrock_id": "brick_block",
+        "numeric_id": 45,
+        "display_name": "Bricks"
+      },
+      {
+        "constant": "STONE_BRICKS",
+        "bedrock_id": "stonebrick",
+        "numeric_id": 98,
+        "display_name": "Stone Bricks",
+        "variants": {
+          "0": "Stone Bricks",
+          "1": "Mossy Stone Bricks",
+          "2": "Cracked Stone Bricks",
+          "3": "Chiseled Stone Bricks"
+        }
+      },
+      {
+        "constant": "MOSSY_STONE_BRICKS",
+        "bedrock_id": "stonebrick",
+        "numeric_id": 98,
+        "display_name": "Mossy Stone Bricks",
+        "notes": "blockWithData(STONE_BRICKS, 1)"
+      },
+      {
+        "constant": "CRACKED_STONE_BRICKS",
+        "bedrock_id": "stonebrick",
+        "numeric_id": 98,
+        "display_name": "Cracked Stone Bricks",
+        "notes": "blockWithData(STONE_BRICKS, 2)"
+      },
+      {
+        "constant": "CHISELED_STONE_BRICKS",
+        "bedrock_id": "stonebrick",
+        "numeric_id": 98,
+        "display_name": "Chiseled Stone Bricks",
+        "notes": "blockWithData(STONE_BRICKS, 3)"
+      },
+      {
+        "constant": "SANDSTONE",
+        "bedrock_id": "sandstone",
+        "numeric_id": 24,
+        "display_name": "Sandstone",
+        "variants": {
+          "0": "Sandstone",
+          "1": "Chiseled Sandstone",
+          "2": "Smooth Sandstone"
+        }
+      },
+      {
+        "constant": "RED_SANDSTONE",
+        "bedrock_id": "red_sandstone",
+        "numeric_id": 179,
+        "display_name": "Red Sandstone"
+      },
+      {
+        "constant": "COBBLESTONE_WALL",
+        "bedrock_id": "cobblestone_wall",
+        "numeric_id": 139,
+        "display_name": "Cobblestone Wall"
+      },
+      {
+        "constant": "GLASS",
+        "bedrock_id": "glass",
+        "numeric_id": 20,
+        "display_name": "Glass"
+      },
+      {
+        "constant": "GLASS_PANE",
+        "bedrock_id": "glass_pane",
+        "numeric_id": 102,
+        "display_name": "Glass Pane"
+      },
+      {
+        "constant": "QUARTZ_BLOCK",
+        "bedrock_id": "quartz_block",
+        "numeric_id": 155,
+        "display_name": "Quartz Block"
+      },
+      {
+        "constant": "BOOKSHELF",
+        "bedrock_id": "bookshelf",
+        "numeric_id": 47,
+        "display_name": "Bookshelf"
+      },
+      {
+        "constant": "MOSS_STONE",
+        "bedrock_id": "mossy_cobblestone",
+        "numeric_id": 48,
+        "display_name": "Mossy Cobblestone"
+      },
+      {
+        "constant": "NETHER_BRICK_BLOCK",
+        "bedrock_id": "nether_brick_block",
+        "numeric_id": 112,
+        "display_name": "Nether Brick Block",
+        "notes": "Different from NETHER_BRICK fence"
+      },
+      {
+        "constant": "RED_NETHER_BRICK",
+        "bedrock_id": "red_nether_brick",
+        "numeric_id": 215,
+        "display_name": "Red Nether Bricks"
+      },
+      {
+        "constant": "BONE_BLOCK",
+        "bedrock_id": "bone_block",
+        "numeric_id": 216,
+        "display_name": "Bone Block"
+      },
+      {
+        "constant": "PURPUR_BLOCK",
+        "bedrock_id": "purpur_block",
+        "numeric_id": 201,
+        "display_name": "Purpur Block"
+      },
+      {
+        "constant": "END_BRICKS",
+        "bedrock_id": "end_bricks",
+        "numeric_id": 206,
+        "display_name": "End Stone Bricks"
+      },
+      {
+        "constant": "PRISMARINE",
+        "bedrock_id": "prismarine",
+        "numeric_id": 168,
+        "display_name": "Prismarine",
+        "variants": {
+          "0": "Prismarine",
+          "1": "Prismarine Bricks",
+          "2": "Dark Prismarine"
+        }
+      },
+      {
+        "constant": "SEA_LANTERN",
+        "bedrock_id": "sea_lantern",
+        "numeric_id": 169,
+        "display_name": "Sea Lantern"
+      },
+      {
+        "constant": "HARDENED_CLAY",
+        "bedrock_id": "hardened_clay",
+        "numeric_id": 172,
+        "display_name": "Terracotta (Uncoloured)"
+      },
+      {
+        "constant": "TERRACOTTA",
+        "bedrock_id": "hardened_clay",
+        "numeric_id": 172,
+        "display_name": "Terracotta",
+        "notes": "Same as HARDENED_CLAY"
+      },
+      {
+        "constant": "SPONGE",
+        "bedrock_id": "sponge",
+        "numeric_id": 19,
+        "display_name": "Sponge",
+        "variants": {
+          "0": "Dry Sponge",
+          "1": "Wet Sponge"
+        }
+      }
+    ],
+    "valuable_blocks": [
+      {
+        "constant": "GOLD_BLOCK",
+        "bedrock_id": "gold_block",
+        "numeric_id": 41,
+        "display_name": "Gold Block"
+      },
+      {
+        "constant": "IRON_BLOCK",
+        "bedrock_id": "iron_block",
+        "numeric_id": 42,
+        "display_name": "Iron Block"
+      },
+      {
+        "constant": "DIAMOND_BLOCK",
+        "bedrock_id": "diamond_block",
+        "numeric_id": 57,
+        "display_name": "Diamond Block"
+      },
+      {
+        "constant": "EMERALD_BLOCK",
+        "bedrock_id": "emerald_block",
+        "numeric_id": 133,
+        "display_name": "Emerald Block"
+      },
+      {
+        "constant": "LAPIS_BLOCK",
+        "bedrock_id": "lapis_block",
+        "numeric_id": 22,
+        "display_name": "Lapis Lazuli Block"
+      },
+      {
+        "constant": "REDSTONE_BLOCK",
+        "bedrock_id": "redstone_block",
+        "numeric_id": 152,
+        "display_name": "Redstone Block"
+      },
+      {
+        "constant": "COAL_BLOCK",
+        "bedrock_id": "coal_block",
+        "numeric_id": 173,
+        "display_name": "Coal Block"
+      },
+      {
+        "constant": "NETHERITE_BLOCK",
+        "bedrock_id": "netherite_block",
+        "numeric_id": 525,
+        "display_name": "Netherite Block"
+      }
+    ],
+    "wood_and_logs": [
+      {
+        "constant": "OAK_LOG",
+        "bedrock_id": "log",
+        "numeric_id": 17,
+        "display_name": "Oak Log",
+        "notes": "blockWithData(LOG, 0) for oak; data 0-3 = oak/spruce/birch/jungle, upright"
+      },
+      {
+        "constant": "SPRUCE_LOG",
+        "bedrock_id": "log",
+        "numeric_id": 17,
+        "display_name": "Spruce Log",
+        "notes": "blockWithData(LOG, 1)"
+      },
+      {
+        "constant": "BIRCH_LOG",
+        "bedrock_id": "log",
+        "numeric_id": 17,
+        "display_name": "Birch Log",
+        "notes": "blockWithData(LOG, 2)"
+      },
+      {
+        "constant": "JUNGLE_LOG",
+        "bedrock_id": "log",
+        "numeric_id": 17,
+        "display_name": "Jungle Log",
+        "notes": "blockWithData(LOG, 3)"
+      },
+      {
+        "constant": "ACACIA_LOG",
+        "bedrock_id": "log2",
+        "numeric_id": 162,
+        "display_name": "Acacia Log",
+        "notes": "blockWithData(LOG2, 0)"
+      },
+      {
+        "constant": "DARK_OAK_LOG",
+        "bedrock_id": "log2",
+        "numeric_id": 162,
+        "display_name": "Dark Oak Log",
+        "notes": "blockWithData(LOG2, 1)"
+      },
+      {
+        "constant": "STRIPPED_OAK_LOG",
+        "bedrock_id": "stripped_oak_log",
+        "numeric_id": 265,
+        "display_name": "Stripped Oak Log"
+      },
+      {
+        "constant": "STRIPPED_SPRUCE_LOG",
+        "bedrock_id": "stripped_spruce_log",
+        "numeric_id": 260,
+        "display_name": "Stripped Spruce Log"
+      },
+      {
+        "constant": "STRIPPED_BIRCH_LOG",
+        "bedrock_id": "stripped_birch_log",
+        "numeric_id": 261,
+        "display_name": "Stripped Birch Log"
+      },
+      {
+        "constant": "STRIPPED_JUNGLE_LOG",
+        "bedrock_id": "stripped_jungle_log",
+        "numeric_id": 262,
+        "display_name": "Stripped Jungle Log"
+      },
+      {
+        "constant": "STRIPPED_ACACIA_LOG",
+        "bedrock_id": "stripped_acacia_log",
+        "numeric_id": 263,
+        "display_name": "Stripped Acacia Log"
+      },
+      {
+        "constant": "STRIPPED_DARK_OAK_LOG",
+        "bedrock_id": "stripped_dark_oak_log",
+        "numeric_id": 264,
+        "display_name": "Stripped Dark Oak Log"
+      },
+      {
+        "constant": "CRIMSON_STEM",
+        "bedrock_id": "crimson_stem",
+        "numeric_id": 483,
+        "display_name": "Crimson Stem"
+      },
+      {
+        "constant": "WARPED_STEM",
+        "bedrock_id": "warped_stem",
+        "numeric_id": 484,
+        "display_name": "Warped Stem"
+      },
+      {
+        "constant": "BAMBOO",
+        "bedrock_id": "bamboo",
+        "numeric_id": 418,
+        "display_name": "Bamboo"
+      },
+      {
+        "constant": "BAMBOO_BLOCK",
+        "bedrock_id": "bamboo_block",
+        "numeric_id": 761,
+        "display_name": "Bamboo Block"
+      }
+    ],
+    "leaves_and_plants": [
+      {
+        "constant": "LEAVES",
+        "bedrock_id": "leaves",
+        "numeric_id": 18,
+        "display_name": "Oak Leaves",
+        "notes": "variants 0=oak, 1=spruce, 2=birch, 3=jungle"
+      },
+      {
+        "constant": "LEAVES2",
+        "bedrock_id": "leaves2",
+        "numeric_id": 161,
+        "display_name": "Acacia/Dark Oak Leaves",
+        "notes": "variants 0=acacia, 1=dark oak"
+      },
+      {
+        "constant": "GRASS_TALL",
+        "bedrock_id": "tallgrass",
+        "numeric_id": 31,
+        "display_name": "Tall Grass",
+        "notes": "blockWithData(GRASS_TALL, 1) for grass, 2 for fern"
+      },
+      {
+        "constant": "YELLOW_FLOWER",
+        "bedrock_id": "yellow_flower",
+        "numeric_id": 37,
+        "display_name": "Dandelion"
+      },
+      {
+        "constant": "RED_FLOWER",
+        "bedrock_id": "red_flower",
+        "numeric_id": 38,
+        "display_name": "Poppy/Various Flowers",
+        "variants": {
+          "0": "Poppy",
+          "1": "Blue Orchid",
+          "2": "Allium",
+          "3": "Azure Bluet",
+          "4": "Red Tulip",
+          "5": "Orange Tulip",
+          "6": "White Tulip",
+          "7": "Pink Tulip",
+          "8": "Oxeye Daisy"
+        }
+      },
+      {
+        "constant": "BROWN_MUSHROOM",
+        "bedrock_id": "brown_mushroom",
+        "numeric_id": 39,
+        "display_name": "Brown Mushroom"
+      },
+      {
+        "constant": "RED_MUSHROOM",
+        "bedrock_id": "red_mushroom",
+        "numeric_id": 40,
+        "display_name": "Red Mushroom"
+      },
+      {
+        "constant": "CACTUS",
+        "bedrock_id": "cactus",
+        "numeric_id": 81,
+        "display_name": "Cactus"
+      },
+      {
+        "constant": "VINE",
+        "bedrock_id": "vine",
+        "numeric_id": 106,
+        "display_name": "Vine"
+      },
+      {
+        "constant": "LILY_PAD",
+        "bedrock_id": "waterlily",
+        "numeric_id": 111,
+        "display_name": "Lily Pad"
+      },
+      {
+        "constant": "SUNFLOWER",
+        "bedrock_id": "double_plant",
+        "numeric_id": 175,
+        "display_name": "Sunflower",
+        "notes": "blockWithData(DOUBLE_PLANT, 0)"
+      },
+      {
+        "constant": "LILAC",
+        "bedrock_id": "double_plant",
+        "numeric_id": 175,
+        "display_name": "Lilac",
+        "notes": "blockWithData(DOUBLE_PLANT, 1)"
+      },
+      {
+        "constant": "DOUBLE_TALL_GRASS",
+        "bedrock_id": "double_plant",
+        "numeric_id": 175,
+        "display_name": "Double Tall Grass",
+        "notes": "blockWithData(DOUBLE_PLANT, 2)"
+      },
+      {
+        "constant": "LARGE_FERN",
+        "bedrock_id": "double_plant",
+        "numeric_id": 175,
+        "display_name": "Large Fern",
+        "notes": "blockWithData(DOUBLE_PLANT, 3)"
+      },
+      {
+        "constant": "ROSE_BUSH",
+        "bedrock_id": "double_plant",
+        "numeric_id": 175,
+        "display_name": "Rose Bush",
+        "notes": "blockWithData(DOUBLE_PLANT, 4)"
+      },
+      {
+        "constant": "PEONY",
+        "bedrock_id": "double_plant",
+        "numeric_id": 175,
+        "display_name": "Peony",
+        "notes": "blockWithData(DOUBLE_PLANT, 5)"
+      },
+      {
+        "constant": "SEA_PICKLE",
+        "bedrock_id": "sea_pickle",
+        "numeric_id": 411,
+        "display_name": "Sea Pickle"
+      },
+      {
+        "constant": "KELP",
+        "bedrock_id": "kelp",
+        "numeric_id": 393,
+        "display_name": "Kelp"
+      },
+      {
+        "constant": "SEAGRASS",
+        "bedrock_id": "seagrass",
+        "numeric_id": 385,
+        "display_name": "Seagrass"
+      },
+      {
+        "constant": "CRIMSON_ROOTS",
+        "bedrock_id": "crimson_roots",
+        "numeric_id": 478,
+        "display_name": "Crimson Roots"
+      },
+      {
+        "constant": "WARPED_ROOTS",
+        "bedrock_id": "warped_roots",
+        "numeric_id": 479,
+        "display_name": "Warped Roots"
+      },
+      {
+        "constant": "NETHER_SPROUTS",
+        "bedrock_id": "nether_sprouts",
+        "numeric_id": 493,
+        "display_name": "Nether Sprouts"
+      },
+      {
+        "constant": "WEEPING_VINES",
+        "bedrock_id": "weeping_vines",
+        "numeric_id": 485,
+        "display_name": "Weeping Vines"
+      },
+      {
+        "constant": "TWISTING_VINES",
+        "bedrock_id": "twisting_vines",
+        "numeric_id": 542,
+        "display_name": "Twisting Vines"
+      },
+      {
+        "constant": "GLOW_LICHEN",
+        "bedrock_id": "glow_lichen",
+        "numeric_id": 638,
+        "display_name": "Glow Lichen"
+      },
+      {
+        "constant": "AZALEA",
+        "bedrock_id": "azalea",
+        "numeric_id": 636,
+        "display_name": "Azalea"
+      },
+      {
+        "constant": "FLOWERING_AZALEA",
+        "bedrock_id": "flowering_azalea",
+        "numeric_id": 637,
+        "display_name": "Flowering Azalea"
+      },
+      {
+        "constant": "MOSS_BLOCK",
+        "bedrock_id": "moss_block",
+        "numeric_id": 575,
+        "display_name": "Moss Block"
+      },
+      {
+        "constant": "MOSS_CARPET",
+        "bedrock_id": "moss_carpet",
+        "numeric_id": 590,
+        "display_name": "Moss Carpet"
+      },
+      {
+        "constant": "BIG_DRIPLEAF",
+        "bedrock_id": "big_dripleaf",
+        "numeric_id": 591,
+        "display_name": "Big Dripleaf"
+      },
+      {
+        "constant": "SMALL_DRIPLEAF_BLOCK",
+        "bedrock_id": "small_dripleaf_block",
+        "numeric_id": 592,
+        "display_name": "Small Dripleaf"
+      },
+      {
+        "constant": "SPORE_BLOSSOM",
+        "bedrock_id": "spore_blossom",
+        "numeric_id": 577,
+        "display_name": "Spore Blossom"
+      },
+      {
+        "constant": "MANGROVE_LEAVES",
+        "bedrock_id": "mangrove_leaves",
+        "numeric_id": 741,
+        "display_name": "Mangrove Leaves"
+      },
+      {
+        "constant": "MANGROVE_LOG",
+        "bedrock_id": "mangrove_log",
+        "numeric_id": 734,
+        "display_name": "Mangrove Log"
+      },
+      {
+        "constant": "MANGROVE_PLANKS",
+        "bedrock_id": "mangrove_planks",
+        "numeric_id": 740,
+        "display_name": "Mangrove Planks"
+      }
+    ],
+    "wool_and_dyed": [
+      {
+        "constant": "WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "White Wool",
+        "notes": "Default is white. Use blockWithData(WOOL, n) for colours"
+      },
+      {
+        "constant": "WHITE_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "White Wool",
+        "notes": "blockWithData(WOOL, 0)"
+      },
+      {
+        "constant": "ORANGE_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Orange Wool",
+        "notes": "blockWithData(WOOL, 1)"
+      },
+      {
+        "constant": "MAGENTA_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Magenta Wool",
+        "notes": "blockWithData(WOOL, 2)"
+      },
+      {
+        "constant": "LIGHT_BLUE_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Light Blue Wool",
+        "notes": "blockWithData(WOOL, 3)"
+      },
+      {
+        "constant": "YELLOW_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Yellow Wool",
+        "notes": "blockWithData(WOOL, 4)"
+      },
+      {
+        "constant": "LIME_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Lime Wool",
+        "notes": "blockWithData(WOOL, 5)"
+      },
+      {
+        "constant": "PINK_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Pink Wool",
+        "notes": "blockWithData(WOOL, 6)"
+      },
+      {
+        "constant": "GRAY_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Gray Wool",
+        "notes": "blockWithData(WOOL, 7)"
+      },
+      {
+        "constant": "LIGHT_GRAY_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Light Gray Wool",
+        "notes": "blockWithData(WOOL, 8)"
+      },
+      {
+        "constant": "CYAN_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Cyan Wool",
+        "notes": "blockWithData(WOOL, 9)"
+      },
+      {
+        "constant": "PURPLE_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Purple Wool",
+        "notes": "blockWithData(WOOL, 10)"
+      },
+      {
+        "constant": "BLUE_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Blue Wool",
+        "notes": "blockWithData(WOOL, 11)"
+      },
+      {
+        "constant": "BROWN_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Brown Wool",
+        "notes": "blockWithData(WOOL, 12)"
+      },
+      {
+        "constant": "GREEN_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Green Wool",
+        "notes": "blockWithData(WOOL, 13)"
+      },
+      {
+        "constant": "RED_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Red Wool",
+        "notes": "blockWithData(WOOL, 14)"
+      },
+      {
+        "constant": "BLACK_WOOL",
+        "bedrock_id": "wool",
+        "numeric_id": 35,
+        "display_name": "Black Wool",
+        "notes": "blockWithData(WOOL, 15)"
+      },
+      {
+        "constant": "WHITE_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "White Concrete",
+        "notes": "blockWithData(CONCRETE, 0)"
+      },
+      {
+        "constant": "ORANGE_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Orange Concrete",
+        "notes": "blockWithData(CONCRETE, 1)"
+      },
+      {
+        "constant": "MAGENTA_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Magenta Concrete",
+        "notes": "blockWithData(CONCRETE, 2)"
+      },
+      {
+        "constant": "LIGHT_BLUE_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Light Blue Concrete",
+        "notes": "blockWithData(CONCRETE, 3)"
+      },
+      {
+        "constant": "YELLOW_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Yellow Concrete",
+        "notes": "blockWithData(CONCRETE, 4)"
+      },
+      {
+        "constant": "LIME_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Lime Concrete",
+        "notes": "blockWithData(CONCRETE, 5)"
+      },
+      {
+        "constant": "PINK_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Pink Concrete",
+        "notes": "blockWithData(CONCRETE, 6)"
+      },
+      {
+        "constant": "GRAY_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Gray Concrete",
+        "notes": "blockWithData(CONCRETE, 7)"
+      },
+      {
+        "constant": "LIGHT_GRAY_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Light Gray Concrete",
+        "notes": "blockWithData(CONCRETE, 8)"
+      },
+      {
+        "constant": "CYAN_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Cyan Concrete",
+        "notes": "blockWithData(CONCRETE, 9)"
+      },
+      {
+        "constant": "PURPLE_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Purple Concrete",
+        "notes": "blockWithData(CONCRETE, 10)"
+      },
+      {
+        "constant": "BLUE_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Blue Concrete",
+        "notes": "blockWithData(CONCRETE, 11)"
+      },
+      {
+        "constant": "BROWN_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Brown Concrete",
+        "notes": "blockWithData(CONCRETE, 12)"
+      },
+      {
+        "constant": "GREEN_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Green Concrete",
+        "notes": "blockWithData(CONCRETE, 13)"
+      },
+      {
+        "constant": "RED_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Red Concrete",
+        "notes": "blockWithData(CONCRETE, 14)"
+      },
+      {
+        "constant": "BLACK_CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Black Concrete",
+        "notes": "blockWithData(CONCRETE, 15)"
+      },
+      {
+        "constant": "CONCRETE",
+        "bedrock_id": "concrete",
+        "numeric_id": 236,
+        "display_name": "Concrete (White default)"
+      },
+      {
+        "constant": "WHITE_GLAZED_TERRACOTTA",
+        "bedrock_id": "white_glazed_terracotta",
+        "numeric_id": 220,
+        "display_name": "White Glazed Terracotta"
+      },
+      {
+        "constant": "ORANGE_GLAZED_TERRACOTTA",
+        "bedrock_id": "orange_glazed_terracotta",
+        "numeric_id": 221,
+        "display_name": "Orange Glazed Terracotta"
+      },
+      {
+        "constant": "MAGENTA_GLAZED_TERRACOTTA",
+        "bedrock_id": "magenta_glazed_terracotta",
+        "numeric_id": 222,
+        "display_name": "Magenta Glazed Terracotta"
+      },
+      {
+        "constant": "LIGHT_BLUE_GLAZED_TERRACOTTA",
+        "bedrock_id": "light_blue_glazed_terracotta",
+        "numeric_id": 223,
+        "display_name": "Light Blue Glazed Terracotta"
+      },
+      {
+        "constant": "YELLOW_GLAZED_TERRACOTTA",
+        "bedrock_id": "yellow_glazed_terracotta",
+        "numeric_id": 224,
+        "display_name": "Yellow Glazed Terracotta"
+      },
+      {
+        "constant": "LIME_GLAZED_TERRACOTTA",
+        "bedrock_id": "lime_glazed_terracotta",
+        "numeric_id": 225,
+        "display_name": "Lime Glazed Terracotta"
+      },
+      {
+        "constant": "PINK_GLAZED_TERRACOTTA",
+        "bedrock_id": "pink_glazed_terracotta",
+        "numeric_id": 226,
+        "display_name": "Pink Glazed Terracotta"
+      },
+      {
+        "constant": "GRAY_GLAZED_TERRACOTTA",
+        "bedrock_id": "gray_glazed_terracotta",
+        "numeric_id": 227,
+        "display_name": "Gray Glazed Terracotta"
+      },
+      {
+        "constant": "SILVER_GLAZED_TERRACOTTA",
+        "bedrock_id": "silver_glazed_terracotta",
+        "numeric_id": 228,
+        "display_name": "Light Gray Glazed Terracotta"
+      },
+      {
+        "constant": "CYAN_GLAZED_TERRACOTTA",
+        "bedrock_id": "cyan_glazed_terracotta",
+        "numeric_id": 229,
+        "display_name": "Cyan Glazed Terracotta"
+      },
+      {
+        "constant": "PURPLE_GLAZED_TERRACOTTA",
+        "bedrock_id": "purple_glazed_terracotta",
+        "numeric_id": 219,
+        "display_name": "Purple Glazed Terracotta"
+      },
+      {
+        "constant": "BLUE_GLAZED_TERRACOTTA",
+        "bedrock_id": "blue_glazed_terracotta",
+        "numeric_id": 231,
+        "display_name": "Blue Glazed Terracotta"
+      },
+      {
+        "constant": "BROWN_GLAZED_TERRACOTTA",
+        "bedrock_id": "brown_glazed_terracotta",
+        "numeric_id": 232,
+        "display_name": "Brown Glazed Terracotta"
+      },
+      {
+        "constant": "GREEN_GLAZED_TERRACOTTA",
+        "bedrock_id": "green_glazed_terracotta",
+        "numeric_id": 233,
+        "display_name": "Green Glazed Terracotta"
+      },
+      {
+        "constant": "RED_GLAZED_TERRACOTTA",
+        "bedrock_id": "red_glazed_terracotta",
+        "numeric_id": 234,
+        "display_name": "Red Glazed Terracotta"
+      },
+      {
+        "constant": "BLACK_GLAZED_TERRACOTTA",
+        "bedrock_id": "black_glazed_terracotta",
+        "numeric_id": 235,
+        "display_name": "Black Glazed Terracotta"
+      },
+      {
+        "constant": "WHITE_TERRACOTTA",
+        "bedrock_id": "stained_hardened_clay",
+        "numeric_id": 159,
+        "display_name": "White Terracotta",
+        "notes": "blockWithData(STAINED_HARDENED_CLAY, 0)"
+      },
+      {
+        "constant": "ORANGE_TERRACOTTA",
+        "bedrock_id": "stained_hardened_clay",
+        "numeric_id": 159,
+        "display_name": "Orange Terracotta",
+        "notes": "blockWithData(STAINED_HARDENED_CLAY, 1)"
+      },
+      {
+        "constant": "YELLOW_TERRACOTTA",
+        "bedrock_id": "stained_hardened_clay",
+        "numeric_id": 159,
+        "display_name": "Yellow Terracotta",
+        "notes": "blockWithData(STAINED_HARDENED_CLAY, 4)"
+      },
+      {
+        "constant": "RED_TERRACOTTA",
+        "bedrock_id": "stained_hardened_clay",
+        "numeric_id": 159,
+        "display_name": "Red Terracotta",
+        "notes": "blockWithData(STAINED_HARDENED_CLAY, 14)"
+      },
+      {
+        "constant": "STAINED_GLASS",
+        "bedrock_id": "stained_glass",
+        "numeric_id": 241,
+        "display_name": "Stained Glass",
+        "notes": "blockWithData(STAINED_GLASS, 0-15) for colours"
+      },
+      {
+        "constant": "STAINED_GLASS_PANE",
+        "bedrock_id": "stained_glass_pane",
+        "numeric_id": 160,
+        "display_name": "Stained Glass Pane",
+        "notes": "blockWithData(STAINED_GLASS_PANE, 0-15)"
+      }
+    ],
+    "light_and_fire": [
+      {
+        "constant": "TORCH",
+        "bedrock_id": "torch",
+        "numeric_id": 50,
+        "display_name": "Torch"
+      },
+      {
+        "constant": "FIRE",
+        "bedrock_id": "fire",
+        "numeric_id": 51,
+        "display_name": "Fire"
+      },
+      {
+        "constant": "GLOWSTONE",
+        "bedrock_id": "glowstone",
+        "numeric_id": 89,
+        "display_name": "Glowstone"
+      },
+      {
+        "constant": "LANTERN",
+        "bedrock_id": "lantern",
+        "numeric_id": 463,
+        "display_name": "Lantern"
+      },
+      {
+        "constant": "SOUL_LANTERN",
+        "bedrock_id": "soul_lantern",
+        "numeric_id": 524,
+        "display_name": "Soul Lantern"
+      },
+      {
+        "constant": "SOUL_TORCH",
+        "bedrock_id": "soul_torch",
+        "numeric_id": 531,
+        "display_name": "Soul Torch"
+      },
+      {
+        "constant": "SOUL_FIRE",
+        "bedrock_id": "soul_fire",
+        "numeric_id": 492,
+        "display_name": "Soul Fire"
+      },
+      {
+        "constant": "END_ROD",
+        "bedrock_id": "end_rod",
+        "numeric_id": 208,
+        "display_name": "End Rod"
+      },
+      {
+        "constant": "SHROOMLIGHT",
+        "bedrock_id": "shroomlight",
+        "numeric_id": 485,
+        "display_name": "Shroomlight"
+      },
+      {
+        "constant": "AMETHYST_BLOCK",
+        "bedrock_id": "amethyst_block",
+        "numeric_id": 582,
+        "display_name": "Block of Amethyst"
+      },
+      {
+        "constant": "GLOW_FRAME",
+        "bedrock_id": "glow_frame",
+        "numeric_id": 623,
+        "display_name": "Glow Item Frame (block)"
+      }
+    ],
+    "tnt_and_explosives": [
+      {
+        "constant": "TNT",
+        "bedrock_id": "tnt",
+        "numeric_id": 46,
+        "display_name": "TNT"
+      },
+      {
+        "constant": "NETHER_REACTOR_CORE",
+        "bedrock_id": "netherreactor",
+        "numeric_id": 247,
+        "display_name": "Nether Reactor Core",
+        "notes": "Legacy/Education block"
+      }
+    ],
+    "functional_blocks": [
+      {
+        "constant": "CRAFTING_TABLE",
+        "bedrock_id": "crafting_table",
+        "numeric_id": 58,
+        "display_name": "Crafting Table"
+      },
+      {
+        "constant": "FURNACE",
+        "bedrock_id": "furnace",
+        "numeric_id": 61,
+        "display_name": "Furnace"
+      },
+      {
+        "constant": "CHEST",
+        "bedrock_id": "chest",
+        "numeric_id": 54,
+        "display_name": "Chest"
+      },
+      {
+        "constant": "TRAPPED_CHEST",
+        "bedrock_id": "trapped_chest",
+        "numeric_id": 146,
+        "display_name": "Trapped Chest"
+      },
+      {
+        "constant": "ENDER_CHEST",
+        "bedrock_id": "ender_chest",
+        "numeric_id": 130,
+        "display_name": "Ender Chest"
+      },
+      {
+        "constant": "ENCHANTING_TABLE",
+        "bedrock_id": "enchanting_table",
+        "numeric_id": 116,
+        "display_name": "Enchanting Table"
+      },
+      {
+        "constant": "ANVIL",
+        "bedrock_id": "anvil",
+        "numeric_id": 145,
+        "display_name": "Anvil"
+      },
+      {
+        "constant": "BEACON",
+        "bedrock_id": "beacon",
+        "numeric_id": 138,
+        "display_name": "Beacon"
+      },
+      {
+        "constant": "BREWING_STAND",
+        "bedrock_id": "brewing_stand",
+        "numeric_id": 117,
+        "display_name": "Brewing Stand"
+      },
+      {
+        "constant": "CAULDRON",
+        "bedrock_id": "cauldron",
+        "numeric_id": 118,
+        "display_name": "Cauldron"
+      },
+      {
+        "constant": "JUKEBOX",
+        "bedrock_id": "jukebox",
+        "numeric_id": 84,
+        "display_name": "Jukebox"
+      },
+      {
+        "constant": "NOTE_BLOCK",
+        "bedrock_id": "noteblock",
+        "numeric_id": 25,
+        "display_name": "Note Block"
+      },
+      {
+        "constant": "DAYLIGHT_DETECTOR",
+        "bedrock_id": "daylight_detector",
+        "numeric_id": 151,
+        "display_name": "Daylight Detector"
+      },
+      {
+        "constant": "HOPPER",
+        "bedrock_id": "hopper",
+        "numeric_id": 154,
+        "display_name": "Hopper"
+      },
+      {
+        "constant": "DROPPER",
+        "bedrock_id": "dropper",
+        "numeric_id": 125,
+        "display_name": "Dropper"
+      },
+      {
+        "constant": "DISPENSER",
+        "bedrock_id": "dispenser",
+        "numeric_id": 23,
+        "display_name": "Dispenser"
+      },
+      {
+        "constant": "PISTON",
+        "bedrock_id": "piston",
+        "numeric_id": 33,
+        "display_name": "Piston"
+      },
+      {
+        "constant": "STICKY_PISTON",
+        "bedrock_id": "sticky_piston",
+        "numeric_id": 29,
+        "display_name": "Sticky Piston"
+      },
+      {
+        "constant": "OBSERVER",
+        "bedrock_id": "observer",
+        "numeric_id": 251,
+        "display_name": "Observer"
+      },
+      {
+        "constant": "COMPOSTER",
+        "bedrock_id": "composter",
+        "numeric_id": 468,
+        "display_name": "Composter"
+      },
+      {
+        "constant": "SMOKER",
+        "bedrock_id": "smoker",
+        "numeric_id": 453,
+        "display_name": "Smoker"
+      },
+      {
+        "constant": "BLAST_FURNACE",
+        "bedrock_id": "blast_furnace",
+        "numeric_id": 451,
+        "display_name": "Blast Furnace"
+      },
+      {
+        "constant": "GRINDSTONE",
+        "bedrock_id": "grindstone",
+        "numeric_id": 450,
+        "display_name": "Grindstone"
+      },
+      {
+        "constant": "CARTOGRAPHY_TABLE",
+        "bedrock_id": "cartography_table",
+        "numeric_id": 455,
+        "display_name": "Cartography Table"
+      },
+      {
+        "constant": "FLETCHING_TABLE",
+        "bedrock_id": "fletching_table",
+        "numeric_id": 456,
+        "display_name": "Fletching Table"
+      },
+      {
+        "constant": "SMITHING_TABLE",
+        "bedrock_id": "smithing_table",
+        "numeric_id": 457,
+        "display_name": "Smithing Table"
+      },
+      {
+        "constant": "LOOM",
+        "bedrock_id": "loom",
+        "numeric_id": 459,
+        "display_name": "Loom"
+      },
+      {
+        "constant": "BARREL",
+        "bedrock_id": "barrel",
+        "numeric_id": 458,
+        "display_name": "Barrel"
+      },
+      {
+        "constant": "BELL",
+        "bedrock_id": "bell",
+        "numeric_id": 461,
+        "display_name": "Bell"
+      },
+      {
+        "constant": "LECTERN",
+        "bedrock_id": "lectern",
+        "numeric_id": 449,
+        "display_name": "Lectern"
+      },
+      {
+        "constant": "BEEHIVE",
+        "bedrock_id": "beehive",
+        "numeric_id": 473,
+        "display_name": "Beehive"
+      },
+      {
+        "constant": "BEE_NEST",
+        "bedrock_id": "bee_nest",
+        "numeric_id": 472,
+        "display_name": "Bee Nest"
+      },
+      {
+        "constant": "RESPAWN_ANCHOR",
+        "bedrock_id": "respawn_anchor",
+        "numeric_id": 527,
+        "display_name": "Respawn Anchor"
+      },
+      {
+        "constant": "LODESTONE",
+        "bedrock_id": "lodestone",
+        "numeric_id": 477,
+        "display_name": "Lodestone"
+      },
+      {
+        "constant": "TARGET",
+        "bedrock_id": "target",
+        "numeric_id": 494,
+        "display_name": "Target"
+      },
+      {
+        "constant": "SCULK_SENSOR",
+        "bedrock_id": "sculk_sensor",
+        "numeric_id": 562,
+        "display_name": "Sculk Sensor"
+      },
+      {
+        "constant": "SCULK_SHRIEKER",
+        "bedrock_id": "sculk_shrieker",
+        "numeric_id": 721,
+        "display_name": "Sculk Shrieker"
+      },
+      {
+        "constant": "SCULK_CATALYST",
+        "bedrock_id": "sculk_catalyst",
+        "numeric_id": 714,
+        "display_name": "Sculk Catalyst"
+      },
+      {
+        "constant": "SCULK",
+        "bedrock_id": "sculk",
+        "numeric_id": 713,
+        "display_name": "Sculk"
+      }
+    ],
+    "redstone": [
+      {
+        "constant": "REDSTONE_WIRE",
+        "bedrock_id": "redstone_wire",
+        "numeric_id": 55,
+        "display_name": "Redstone Wire"
+      },
+      {
+        "constant": "REDSTONE_TORCH",
+        "bedrock_id": "redstone_torch",
+        "numeric_id": 76,
+        "display_name": "Redstone Torch (on)"
+      },
+      {
+        "constant": "LEVER",
+        "bedrock_id": "lever",
+        "numeric_id": 69,
+        "display_name": "Lever"
+      },
+      {
+        "constant": "WOODEN_PRESSURE_PLATE",
+        "bedrock_id": "wooden_pressure_plate",
+        "numeric_id": 72,
+        "display_name": "Oak Pressure Plate"
+      },
+      {
+        "constant": "STONE_PRESSURE_PLATE",
+        "bedrock_id": "stone_pressure_plate",
+        "numeric_id": 70,
+        "display_name": "Stone Pressure Plate"
+      },
+      {
+        "constant": "OAK_BUTTON",
+        "bedrock_id": "wooden_button",
+        "numeric_id": 143,
+        "display_name": "Oak Button"
+      },
+      {
+        "constant": "STONE_BUTTON",
+        "bedrock_id": "stone_button",
+        "numeric_id": 77,
+        "display_name": "Stone Button"
+      },
+      {
+        "constant": "TRIPWIRE_HOOK",
+        "bedrock_id": "tripwire_hook",
+        "numeric_id": 131,
+        "display_name": "Tripwire Hook"
+      },
+      {
+        "constant": "COMMAND_BLOCK",
+        "bedrock_id": "command_block",
+        "numeric_id": 137,
+        "display_name": "Command Block"
+      },
+      {
+        "constant": "REPEATING_COMMAND_BLOCK",
+        "bedrock_id": "repeating_command_block",
+        "numeric_id": 188,
+        "display_name": "Repeating Command Block"
+      },
+      {
+        "constant": "CHAIN_COMMAND_BLOCK",
+        "bedrock_id": "chain_command_block",
+        "numeric_id": 189,
+        "display_name": "Chain Command Block"
+      }
+    ],
+    "stairs_slabs_fences": [
+      {
+        "constant": "OAK_STAIRS",
+        "bedrock_id": "oak_stairs",
+        "numeric_id": 53,
+        "display_name": "Oak Stairs"
+      },
+      {
+        "constant": "COBBLESTONE_STAIRS",
+        "bedrock_id": "stone_stairs",
+        "numeric_id": 67,
+        "display_name": "Cobblestone Stairs"
+      },
+      {
+        "constant": "BRICK_STAIRS",
+        "bedrock_id": "brick_stairs",
+        "numeric_id": 108,
+        "display_name": "Brick Stairs"
+      },
+      {
+        "constant": "STONE_BRICK_STAIRS",
+        "bedrock_id": "stone_brick_stairs",
+        "numeric_id": 109,
+        "display_name": "Stone Brick Stairs"
+      },
+      {
+        "constant": "NETHER_BRICK_STAIRS",
+        "bedrock_id": "nether_brick_stairs",
+        "numeric_id": 114,
+        "display_name": "Nether Brick Stairs"
+      },
+      {
+        "constant": "SANDSTONE_STAIRS",
+        "bedrock_id": "sandstone_stairs",
+        "numeric_id": 128,
+        "display_name": "Sandstone Stairs"
+      },
+      {
+        "constant": "SPRUCE_STAIRS",
+        "bedrock_id": "spruce_stairs",
+        "numeric_id": 134,
+        "display_name": "Spruce Stairs"
+      },
+      {
+        "constant": "BIRCH_STAIRS",
+        "bedrock_id": "birch_stairs",
+        "numeric_id": 135,
+        "display_name": "Birch Stairs"
+      },
+      {
+        "constant": "JUNGLE_STAIRS",
+        "bedrock_id": "jungle_stairs",
+        "numeric_id": 136,
+        "display_name": "Jungle Stairs"
+      },
+      {
+        "constant": "QUARTZ_STAIRS",
+        "bedrock_id": "quartz_stairs",
+        "numeric_id": 156,
+        "display_name": "Quartz Stairs"
+      },
+      {
+        "constant": "ACACIA_STAIRS",
+        "bedrock_id": "acacia_stairs",
+        "numeric_id": 163,
+        "display_name": "Acacia Stairs"
+      },
+      {
+        "constant": "DARK_OAK_STAIRS",
+        "bedrock_id": "dark_oak_stairs",
+        "numeric_id": 164,
+        "display_name": "Dark Oak Stairs"
+      },
+      {
+        "constant": "OAK_FENCE",
+        "bedrock_id": "fence",
+        "numeric_id": 85,
+        "display_name": "Oak Fence"
+      },
+      {
+        "constant": "SPRUCE_FENCE",
+        "bedrock_id": "spruce_fence",
+        "numeric_id": 188,
+        "display_name": "Spruce Fence"
+      },
+      {
+        "constant": "BIRCH_FENCE",
+        "bedrock_id": "birch_fence",
+        "numeric_id": 189,
+        "display_name": "Birch Fence"
+      },
+      {
+        "constant": "JUNGLE_FENCE",
+        "bedrock_id": "jungle_fence",
+        "numeric_id": 190,
+        "display_name": "Jungle Fence"
+      },
+      {
+        "constant": "ACACIA_FENCE",
+        "bedrock_id": "acacia_fence",
+        "numeric_id": 192,
+        "display_name": "Acacia Fence"
+      },
+      {
+        "constant": "DARK_OAK_FENCE",
+        "bedrock_id": "dark_oak_fence",
+        "numeric_id": 191,
+        "display_name": "Dark Oak Fence"
+      },
+      {
+        "constant": "NETHER_BRICK_FENCE",
+        "bedrock_id": "nether_brick_fence",
+        "numeric_id": 113,
+        "display_name": "Nether Brick Fence"
+      },
+      {
+        "constant": "OAK_FENCE_GATE",
+        "bedrock_id": "fence_gate",
+        "numeric_id": 107,
+        "display_name": "Oak Fence Gate"
+      },
+      {
+        "constant": "STONE_SLAB",
+        "bedrock_id": "stone_slab",
+        "numeric_id": 44,
+        "display_name": "Stone Slab",
+        "notes": "blockWithData(STONE_SLAB, 0-7) for different materials"
+      },
+      {
+        "constant": "OAK_SLAB",
+        "bedrock_id": "wooden_slab",
+        "numeric_id": 158,
+        "display_name": "Oak Slab"
+      },
+      {
+        "constant": "LADDER",
+        "bedrock_id": "ladder",
+        "numeric_id": 65,
+        "display_name": "Ladder"
+      }
+    ],
+    "doors_and_trapdoors": [
+      {
+        "constant": "OAK_DOOR",
+        "bedrock_id": "wooden_door",
+        "numeric_id": 64,
+        "display_name": "Oak Door"
+      },
+      {
+        "constant": "IRON_DOOR",
+        "bedrock_id": "iron_door",
+        "numeric_id": 71,
+        "display_name": "Iron Door"
+      },
+      {
+        "constant": "SPRUCE_DOOR",
+        "bedrock_id": "spruce_door",
+        "numeric_id": 193,
+        "display_name": "Spruce Door"
+      },
+      {
+        "constant": "BIRCH_DOOR",
+        "bedrock_id": "birch_door",
+        "numeric_id": 194,
+        "display_name": "Birch Door"
+      },
+      {
+        "constant": "JUNGLE_DOOR",
+        "bedrock_id": "jungle_door",
+        "numeric_id": 195,
+        "display_name": "Jungle Door"
+      },
+      {
+        "constant": "ACACIA_DOOR",
+        "bedrock_id": "acacia_door",
+        "numeric_id": 196,
+        "display_name": "Acacia Door"
+      },
+      {
+        "constant": "DARK_OAK_DOOR",
+        "bedrock_id": "dark_oak_door",
+        "numeric_id": 197,
+        "display_name": "Dark Oak Door"
+      },
+      {
+        "constant": "CRIMSON_DOOR",
+        "bedrock_id": "crimson_door",
+        "numeric_id": 499,
+        "display_name": "Crimson Door"
+      },
+      {
+        "constant": "WARPED_DOOR",
+        "bedrock_id": "warped_door",
+        "numeric_id": 500,
+        "display_name": "Warped Door"
+      },
+      {
+        "constant": "OAK_TRAPDOOR",
+        "bedrock_id": "trapdoor",
+        "numeric_id": 96,
+        "display_name": "Oak Trapdoor"
+      },
+      {
+        "constant": "IRON_TRAPDOOR",
+        "bedrock_id": "iron_trapdoor",
+        "numeric_id": 167,
+        "display_name": "Iron Trapdoor"
+      }
+    ],
+    "nether_and_end": [
+      {
+        "constant": "NETHER_WART_BLOCK",
+        "bedrock_id": "nether_wart_block",
+        "numeric_id": 214,
+        "display_name": "Nether Wart Block"
+      },
+      {
+        "constant": "WARPED_WART_BLOCK",
+        "bedrock_id": "warped_wart_block",
+        "numeric_id": 482,
+        "display_name": "Warped Wart Block"
+      },
+      {
+        "constant": "BASALT",
+        "bedrock_id": "basalt",
+        "numeric_id": 489,
+        "display_name": "Basalt"
+      },
+      {
+        "constant": "BLACKSTONE",
+        "bedrock_id": "blackstone",
+        "numeric_id": 528,
+        "display_name": "Blackstone"
+      },
+      {
+        "constant": "POLISHED_BLACKSTONE",
+        "bedrock_id": "polished_blackstone",
+        "numeric_id": 546,
+        "display_name": "Polished Blackstone"
+      },
+      {
+        "constant": "POLISHED_BLACKSTONE_BRICKS",
+        "bedrock_id": "polished_blackstone_bricks",
+        "numeric_id": 540,
+        "display_name": "Polished Blackstone Bricks"
+      },
+      {
+        "constant": "GILDED_BLACKSTONE",
+        "bedrock_id": "gilded_blackstone",
+        "numeric_id": 536,
+        "display_name": "Gilded Blackstone"
+      },
+      {
+        "constant": "CRYING_OBSIDIAN",
+        "bedrock_id": "crying_obsidian",
+        "numeric_id": 544,
+        "display_name": "Crying Obsidian"
+      },
+      {
+        "constant": "NETHER_GOLD_ORE",
+        "bedrock_id": "nether_gold_ore",
+        "numeric_id": 543,
+        "display_name": "Nether Gold Ore"
+      },
+      {
+        "constant": "END_PORTAL_FRAME",
+        "bedrock_id": "end_portal_frame",
+        "numeric_id": 120,
+        "display_name": "End Portal Frame"
+      },
+      {
+        "constant": "CHORUS_PLANT",
+        "bedrock_id": "chorus_plant",
+        "numeric_id": 240,
+        "display_name": "Chorus Plant"
+      },
+      {
+        "constant": "CHORUS_FLOWER",
+        "bedrock_id": "chorus_flower",
+        "numeric_id": 200,
+        "display_name": "Chorus Flower"
+      }
+    ],
+    "special_and_education": [
+      {
+        "constant": "BARRIER",
+        "bedrock_id": "barrier",
+        "numeric_id": 416,
+        "display_name": "Barrier",
+        "notes": "Invisible solid block"
+      },
+      {
+        "constant": "STRUCTURE_BLOCK",
+        "bedrock_id": "structure_block",
+        "numeric_id": 252,
+        "display_name": "Structure Block"
+      },
+      {
+        "constant": "JIGSAW",
+        "bedrock_id": "jigsaw",
+        "numeric_id": 466,
+        "display_name": "Jigsaw Block"
+      },
+      {
+        "constant": "ALLOW",
+        "bedrock_id": "allow",
+        "numeric_id": 210,
+        "display_name": "Allow",
+        "notes": "Education Edition — allows building in region"
+      },
+      {
+        "constant": "DENY",
+        "bedrock_id": "deny",
+        "numeric_id": 211,
+        "display_name": "Deny",
+        "notes": "Education Edition — prevents building in region"
+      },
+      {
+        "constant": "BORDER_BLOCK",
+        "bedrock_id": "border_block",
+        "numeric_id": 212,
+        "display_name": "Border Block",
+        "notes": "Education Edition — creates invisible walls"
+      },
+      {
+        "constant": "CHALKBOARD",
+        "bedrock_id": "chalkboard",
+        "numeric_id": 230,
+        "display_name": "Chalkboard",
+        "notes": "Education Edition only"
+      },
+      {
+        "constant": "CAMERA",
+        "bedrock_id": "camera",
+        "numeric_id": 242,
+        "display_name": "Camera",
+        "notes": "Education Edition only"
+      },
+      {
+        "constant": "FRAME",
+        "bedrock_id": "frame",
+        "numeric_id": 199,
+        "display_name": "Item Frame"
+      }
+    ]
+  },
+  "items": {
+    "_note": "Items used with mobs.give(), agent.setItem(), etc. Item IDs are > 255 in Bedrock.",
+    "tools": [
+      {
+        "constant": "WOODEN_SHOVEL",
+        "bedrock_id": "wooden_shovel",
+        "numeric_id": 269,
+        "display_name": "Wooden Shovel"
+      },
+      {
+        "constant": "WOODEN_PICKAXE",
+        "bedrock_id": "wooden_pickaxe",
+        "numeric_id": 270,
+        "display_name": "Wooden Pickaxe"
+      },
+      {
+        "constant": "WOODEN_AXE",
+        "bedrock_id": "wooden_axe",
+        "numeric_id": 271,
+        "display_name": "Wooden Axe"
+      },
+      {
+        "constant": "WOODEN_SWORD",
+        "bedrock_id": "wooden_sword",
+        "numeric_id": 268,
+        "display_name": "Wooden Sword"
+      },
+      {
+        "constant": "STONE_SHOVEL",
+        "bedrock_id": "stone_shovel",
+        "numeric_id": 273,
+        "display_name": "Stone Shovel"
+      },
+      {
+        "constant": "STONE_PICKAXE",
+        "bedrock_id": "stone_pickaxe",
+        "numeric_id": 274,
+        "display_name": "Stone Pickaxe"
+      },
+      {
+        "constant": "STONE_AXE",
+        "bedrock_id": "stone_axe",
+        "numeric_id": 275,
+        "display_name": "Stone Axe"
+      },
+      {
+        "constant": "STONE_SWORD",
+        "bedrock_id": "stone_sword",
+        "numeric_id": 272,
+        "display_name": "Stone Sword"
+      },
+      {
+        "constant": "IRON_SHOVEL",
+        "bedrock_id": "iron_shovel",
+        "numeric_id": 256,
+        "display_name": "Iron Shovel"
+      },
+      {
+        "constant": "IRON_PICKAXE",
+        "bedrock_id": "iron_pickaxe",
+        "numeric_id": 257,
+        "display_name": "Iron Pickaxe"
+      },
+      {
+        "constant": "IRON_AXE",
+        "bedrock_id": "iron_axe",
+        "numeric_id": 258,
+        "display_name": "Iron Axe"
+      },
+      {
+        "constant": "IRON_SWORD",
+        "bedrock_id": "iron_sword",
+        "numeric_id": 267,
+        "display_name": "Iron Sword"
+      },
+      {
+        "constant": "GOLD_SHOVEL",
+        "bedrock_id": "golden_shovel",
+        "numeric_id": 284,
+        "display_name": "Golden Shovel"
+      },
+      {
+        "constant": "GOLD_PICKAXE",
+        "bedrock_id": "golden_pickaxe",
+        "numeric_id": 285,
+        "display_name": "Golden Pickaxe"
+      },
+      {
+        "constant": "GOLD_AXE",
+        "bedrock_id": "golden_axe",
+        "numeric_id": 286,
+        "display_name": "Golden Axe"
+      },
+      {
+        "constant": "GOLD_SWORD",
+        "bedrock_id": "golden_sword",
+        "numeric_id": 283,
+        "display_name": "Golden Sword"
+      },
+      {
+        "constant": "DIAMOND_SHOVEL",
+        "bedrock_id": "diamond_shovel",
+        "numeric_id": 277,
+        "display_name": "Diamond Shovel"
+      },
+      {
+        "constant": "DIAMOND_PICKAXE",
+        "bedrock_id": "diamond_pickaxe",
+        "numeric_id": 278,
+        "display_name": "Diamond Pickaxe"
+      },
+      {
+        "constant": "DIAMOND_AXE",
+        "bedrock_id": "diamond_axe",
+        "numeric_id": 279,
+        "display_name": "Diamond Axe"
+      },
+      {
+        "constant": "DIAMOND_SWORD",
+        "bedrock_id": "diamond_sword",
+        "numeric_id": 276,
+        "display_name": "Diamond Sword"
+      },
+      {
+        "constant": "FLINT_AND_STEEL",
+        "bedrock_id": "flint_and_steel",
+        "numeric_id": 259,
+        "display_name": "Flint and Steel"
+      },
+      {
+        "constant": "BOW",
+        "bedrock_id": "bow",
+        "numeric_id": 261,
+        "display_name": "Bow"
+      },
+      {
+        "constant": "CROSSBOW",
+        "bedrock_id": "crossbow",
+        "numeric_id": 471,
+        "display_name": "Crossbow"
+      },
+      {
+        "constant": "TRIDENT",
+        "bedrock_id": "trident",
+        "numeric_id": 455,
+        "display_name": "Trident"
+      },
+      {
+        "constant": "SHEARS",
+        "bedrock_id": "shears",
+        "numeric_id": 421,
+        "display_name": "Shears"
+      },
+      {
+        "constant": "FISHING_ROD",
+        "bedrock_id": "fishing_rod",
+        "numeric_id": 346,
+        "display_name": "Fishing Rod"
+      },
+      {
+        "constant": "COMPASS",
+        "bedrock_id": "compass",
+        "numeric_id": 345,
+        "display_name": "Compass"
+      },
+      {
+        "constant": "CLOCK",
+        "bedrock_id": "clock",
+        "numeric_id": 347,
+        "display_name": "Clock"
+      },
+      {
+        "constant": "SPYGLASS",
+        "bedrock_id": "spyglass",
+        "numeric_id": 772,
+        "display_name": "Spyglass"
+      }
+    ],
+    "armor": [
+      {
+        "constant": "LEATHER_HELMET",
+        "bedrock_id": "leather_helmet",
+        "numeric_id": 298,
+        "display_name": "Leather Helmet"
+      },
+      {
+        "constant": "LEATHER_CHESTPLATE",
+        "bedrock_id": "leather_chestplate",
+        "numeric_id": 299,
+        "display_name": "Leather Chestplate"
+      },
+      {
+        "constant": "IRON_HELMET",
+        "bedrock_id": "iron_helmet",
+        "numeric_id": 306,
+        "display_name": "Iron Helmet"
+      },
+      {
+        "constant": "IRON_CHESTPLATE",
+        "bedrock_id": "iron_chestplate",
+        "numeric_id": 307,
+        "display_name": "Iron Chestplate"
+      },
+      {
+        "constant": "DIAMOND_HELMET",
+        "bedrock_id": "diamond_helmet",
+        "numeric_id": 310,
+        "display_name": "Diamond Helmet"
+      },
+      {
+        "constant": "DIAMOND_CHESTPLATE",
+        "bedrock_id": "diamond_chestplate",
+        "numeric_id": 311,
+        "display_name": "Diamond Chestplate"
+      },
+      {
+        "constant": "NETHERITE_HELMET",
+        "bedrock_id": "netherite_helmet",
+        "numeric_id": 782,
+        "display_name": "Netherite Helmet"
+      },
+      {
+        "constant": "NETHERITE_CHESTPLATE",
+        "bedrock_id": "netherite_chestplate",
+        "numeric_id": 783,
+        "display_name": "Netherite Chestplate"
+      },
+      {
+        "constant": "ELYTRA",
+        "bedrock_id": "elytra",
+        "numeric_id": 444,
+        "display_name": "Elytra"
+      }
+    ],
+    "food_and_consumables": [
+      {
+        "constant": "APPLE",
+        "bedrock_id": "apple",
+        "numeric_id": 260,
+        "display_name": "Apple"
+      },
+      {
+        "constant": "BREAD",
+        "bedrock_id": "bread",
+        "numeric_id": 297,
+        "display_name": "Bread"
+      },
+      {
+        "constant": "COOKED_BEEF",
+        "bedrock_id": "cooked_beef",
+        "numeric_id": 364,
+        "display_name": "Steak"
+      },
+      {
+        "constant": "BEEF",
+        "bedrock_id": "beef",
+        "numeric_id": 363,
+        "display_name": "Raw Beef"
+      },
+      {
+        "constant": "COOKED_CHICKEN",
+        "bedrock_id": "cooked_chicken",
+        "numeric_id": 366,
+        "display_name": "Cooked Chicken"
+      },
+      {
+        "constant": "CHICKEN",
+        "bedrock_id": "chicken",
+        "numeric_id": 365,
+        "display_name": "Raw Chicken"
+      },
+      {
+        "constant": "COOKED_PORKCHOP",
+        "bedrock_id": "cooked_porkchop",
+        "numeric_id": 320,
+        "display_name": "Cooked Porkchop"
+      },
+      {
+        "constant": "PORKCHOP",
+        "bedrock_id": "porkchop",
+        "numeric_id": 319,
+        "display_name": "Raw Porkchop"
+      },
+      {
+        "constant": "COOKED_FISH",
+        "bedrock_id": "cooked_cod",
+        "numeric_id": 350,
+        "display_name": "Cooked Cod"
+      },
+      {
+        "constant": "FISH",
+        "bedrock_id": "cod",
+        "numeric_id": 349,
+        "display_name": "Raw Cod"
+      },
+      {
+        "constant": "GOLDEN_APPLE",
+        "bedrock_id": "golden_apple",
+        "numeric_id": 322,
+        "display_name": "Golden Apple"
+      },
+      {
+        "constant": "MELON",
+        "bedrock_id": "melon_slice",
+        "numeric_id": 360,
+        "display_name": "Melon Slice"
+      },
+      {
+        "constant": "PUMPKIN_PIE",
+        "bedrock_id": "pumpkin_pie",
+        "numeric_id": 400,
+        "display_name": "Pumpkin Pie"
+      },
+      {
+        "constant": "COOKIE",
+        "bedrock_id": "cookie",
+        "numeric_id": 357,
+        "display_name": "Cookie"
+      },
+      {
+        "constant": "CAKE",
+        "bedrock_id": "cake",
+        "numeric_id": 354,
+        "display_name": "Cake"
+      },
+      {
+        "constant": "POTION",
+        "bedrock_id": "potion",
+        "numeric_id": 373,
+        "display_name": "Potion"
+      },
+      {
+        "constant": "SPLASH_POTION",
+        "bedrock_id": "splash_potion",
+        "numeric_id": 438,
+        "display_name": "Splash Potion"
+      },
+      {
+        "constant": "EXPERIENCE_BOTTLE",
+        "bedrock_id": "experience_bottle",
+        "numeric_id": 384,
+        "display_name": "Bottle o' Enchanting"
+      }
+    ],
+    "materials_and_misc": [
+      {
+        "constant": "STICK",
+        "bedrock_id": "stick",
+        "numeric_id": 280,
+        "display_name": "Stick"
+      },
+      {
+        "constant": "COAL",
+        "bedrock_id": "coal",
+        "numeric_id": 263,
+        "display_name": "Coal"
+      },
+      {
+        "constant": "DIAMOND",
+        "bedrock_id": "diamond",
+        "numeric_id": 264,
+        "display_name": "Diamond"
+      },
+      {
+        "constant": "IRON_INGOT",
+        "bedrock_id": "iron_ingot",
+        "numeric_id": 265,
+        "display_name": "Iron Ingot"
+      },
+      {
+        "constant": "GOLD_INGOT",
+        "bedrock_id": "gold_ingot",
+        "numeric_id": 266,
+        "display_name": "Gold Ingot"
+      },
+      {
+        "constant": "EMERALD",
+        "bedrock_id": "emerald",
+        "numeric_id": 388,
+        "display_name": "Emerald"
+      },
+      {
+        "constant": "NETHERITE_INGOT",
+        "bedrock_id": "netherite_ingot",
+        "numeric_id": 619,
+        "display_name": "Netherite Ingot"
+      },
+      {
+        "constant": "ARROW",
+        "bedrock_id": "arrow",
+        "numeric_id": 262,
+        "display_name": "Arrow"
+      },
+      {
+        "constant": "SNOWBALL",
+        "bedrock_id": "snowball",
+        "numeric_id": 332,
+        "display_name": "Snowball"
+      },
+      {
+        "constant": "EGG",
+        "bedrock_id": "egg",
+        "numeric_id": 344,
+        "display_name": "Egg"
+      },
+      {
+        "constant": "FEATHER",
+        "bedrock_id": "feather",
+        "numeric_id": 288,
+        "display_name": "Feather"
+      },
+      {
+        "constant": "BONE",
+        "bedrock_id": "bone",
+        "numeric_id": 352,
+        "display_name": "Bone"
+      },
+      {
+        "constant": "STRING",
+        "bedrock_id": "string",
+        "numeric_id": 287,
+        "display_name": "String"
+      },
+      {
+        "constant": "FLINT",
+        "bedrock_id": "flint",
+        "numeric_id": 318,
+        "display_name": "Flint"
+      },
+      {
+        "constant": "LEATHER",
+        "bedrock_id": "leather",
+        "numeric_id": 334,
+        "display_name": "Leather"
+      },
+      {
+        "constant": "PAPER",
+        "bedrock_id": "paper",
+        "numeric_id": 339,
+        "display_name": "Paper"
+      },
+      {
+        "constant": "BOOK",
+        "bedrock_id": "book",
+        "numeric_id": 340,
+        "display_name": "Book"
+      },
+      {
+        "constant": "WRITTEN_BOOK",
+        "bedrock_id": "written_book",
+        "numeric_id": 387,
+        "display_name": "Written Book"
+      },
+      {
+        "constant": "ENCHANTED_BOOK",
+        "bedrock_id": "enchanted_book",
+        "numeric_id": 403,
+        "display_name": "Enchanted Book"
+      },
+      {
+        "constant": "NAME_TAG",
+        "bedrock_id": "name_tag",
+        "numeric_id": 421,
+        "display_name": "Name Tag"
+      },
+      {
+        "constant": "LEAD",
+        "bedrock_id": "lead",
+        "numeric_id": 420,
+        "display_name": "Lead"
+      },
+      {
+        "constant": "MAP",
+        "bedrock_id": "filled_map",
+        "numeric_id": 358,
+        "display_name": "Map"
+      },
+      {
+        "constant": "SADDLE",
+        "bedrock_id": "saddle",
+        "numeric_id": 329,
+        "display_name": "Saddle"
+      },
+      {
+        "constant": "TOTEM_OF_UNDYING",
+        "bedrock_id": "totem_of_undying",
+        "numeric_id": 450,
+        "display_name": "Totem of Undying"
+      },
+      {
+        "constant": "NETHER_STAR",
+        "bedrock_id": "nether_star",
+        "numeric_id": 399,
+        "display_name": "Nether Star"
+      },
+      {
+        "constant": "ENDER_PEARL",
+        "bedrock_id": "ender_pearl",
+        "numeric_id": 368,
+        "display_name": "Ender Pearl"
+      },
+      {
+        "constant": "ENDER_EYE",
+        "bedrock_id": "ender_eye",
+        "numeric_id": 381,
+        "display_name": "Eye of Ender"
+      },
+      {
+        "constant": "BLAZE_ROD",
+        "bedrock_id": "blaze_rod",
+        "numeric_id": 369,
+        "display_name": "Blaze Rod"
+      },
+      {
+        "constant": "GHAST_TEAR",
+        "bedrock_id": "ghast_tear",
+        "numeric_id": 370,
+        "display_name": "Ghast Tear"
+      },
+      {
+        "constant": "SLIMEBALL",
+        "bedrock_id": "slime_ball",
+        "numeric_id": 341,
+        "display_name": "Slimeball"
+      },
+      {
+        "constant": "LAPIS_LAZULI",
+        "bedrock_id": "dye",
+        "numeric_id": 351,
+        "display_name": "Lapis Lazuli",
+        "notes": "dye:4"
+      },
+      {
+        "constant": "INK_SAC",
+        "bedrock_id": "dye",
+        "numeric_id": 351,
+        "display_name": "Ink Sac",
+        "notes": "dye:0"
+      },
+      {
+        "constant": "BONE_MEAL",
+        "bedrock_id": "dye",
+        "numeric_id": 351,
+        "display_name": "Bone Meal",
+        "notes": "dye:15"
+      },
+      {
+        "constant": "GUNPOWDER",
+        "bedrock_id": "gunpowder",
+        "numeric_id": 289,
+        "display_name": "Gunpowder"
+      },
+      {
+        "constant": "SUGAR_CANE",
+        "bedrock_id": "reeds",
+        "numeric_id": 338,
+        "display_name": "Sugar Cane"
+      },
+      {
+        "constant": "SUGAR",
+        "bedrock_id": "sugar",
+        "numeric_id": 353,
+        "display_name": "Sugar"
+      },
+      {
+        "constant": "WHEAT",
+        "bedrock_id": "wheat",
+        "numeric_id": 296,
+        "display_name": "Wheat"
+      },
+      {
+        "constant": "SEEDS",
+        "bedrock_id": "wheat_seeds",
+        "numeric_id": 295,
+        "display_name": "Wheat Seeds"
+      },
+      {
+        "constant": "CARROT",
+        "bedrock_id": "carrot",
+        "numeric_id": 391,
+        "display_name": "Carrot"
+      },
+      {
+        "constant": "POTATO",
+        "bedrock_id": "potato",
+        "numeric_id": 392,
+        "display_name": "Potato"
+      },
+      {
+        "constant": "PUMPKIN_SEEDS",
+        "bedrock_id": "pumpkin_seeds",
+        "numeric_id": 361,
+        "display_name": "Pumpkin Seeds"
+      },
+      {
+        "constant": "MELON_SEEDS",
+        "bedrock_id": "melon_seeds",
+        "numeric_id": 362,
+        "display_name": "Melon Seeds"
+      },
+      {
+        "constant": "NETHER_WART",
+        "bedrock_id": "nether_wart",
+        "numeric_id": 372,
+        "display_name": "Nether Wart"
+      },
+      {
+        "constant": "BUCKET",
+        "bedrock_id": "bucket",
+        "numeric_id": 325,
+        "display_name": "Empty Bucket"
+      },
+      {
+        "constant": "WATER_BUCKET",
+        "bedrock_id": "bucket",
+        "numeric_id": 325,
+        "display_name": "Water Bucket",
+        "notes": "bucket:8"
+      },
+      {
+        "constant": "LAVA_BUCKET",
+        "bedrock_id": "bucket",
+        "numeric_id": 325,
+        "display_name": "Lava Bucket",
+        "notes": "bucket:10"
+      },
+      {
+        "constant": "MILK_BUCKET",
+        "bedrock_id": "bucket",
+        "numeric_id": 325,
+        "display_name": "Milk Bucket",
+        "notes": "bucket:1"
+      },
+      {
+        "constant": "FLOWER_POT",
+        "bedrock_id": "flower_pot",
+        "numeric_id": 390,
+        "display_name": "Flower Pot"
+      },
+      {
+        "constant": "GLASS_BOTTLE",
+        "bedrock_id": "glass_bottle",
+        "numeric_id": 374,
+        "display_name": "Glass Bottle"
+      }
+    ]
+  },
+  "mobs": {
+    "_note": "Mob constants used with mobs.spawn(), mobs.kill(), mobs.onMobKilled() etc.",
+    "passive": [
+      {
+        "constant": "CHICKEN",
+        "bedrock_id": "chicken",
+        "numeric_id": 10,
+        "display_name": "Chicken"
+      },
+      {
+        "constant": "COW",
+        "bedrock_id": "cow",
+        "numeric_id": 11,
+        "display_name": "Cow"
+      },
+      {
+        "constant": "PIG",
+        "bedrock_id": "pig",
+        "numeric_id": 12,
+        "display_name": "Pig"
+      },
+      {
+        "constant": "SHEEP",
+        "bedrock_id": "sheep",
+        "numeric_id": 13,
+        "display_name": "Sheep"
+      },
+      {
+        "constant": "WOLF",
+        "bedrock_id": "wolf",
+        "numeric_id": 14,
+        "display_name": "Wolf"
+      },
+      {
+        "constant": "VILLAGER",
+        "bedrock_id": "villager",
+        "numeric_id": 15,
+        "display_name": "Villager"
+      },
+      {
+        "constant": "MOOSHROOM",
+        "bedrock_id": "mooshroom",
+        "numeric_id": 16,
+        "display_name": "Mooshroom"
+      },
+      {
+        "constant": "SQUID",
+        "bedrock_id": "squid",
+        "numeric_id": 17,
+        "display_name": "Squid"
+      },
+      {
+        "constant": "RABBIT",
+        "bedrock_id": "rabbit",
+        "numeric_id": 18,
+        "display_name": "Rabbit"
+      },
+      {
+        "constant": "BAT",
+        "bedrock_id": "bat",
+        "numeric_id": 19,
+        "display_name": "Bat"
+      },
+      {
+        "constant": "OCELOT",
+        "bedrock_id": "ocelot",
+        "numeric_id": 22,
+        "display_name": "Ocelot"
+      },
+      {
+        "constant": "HORSE",
+        "bedrock_id": "horse",
+        "numeric_id": 23,
+        "display_name": "Horse"
+      },
+      {
+        "constant": "DONKEY",
+        "bedrock_id": "donkey",
+        "numeric_id": 24,
+        "display_name": "Donkey"
+      },
+      {
+        "constant": "MULE",
+        "bedrock_id": "mule",
+        "numeric_id": 25,
+        "display_name": "Mule"
+      },
+      {
+        "constant": "POLAR_BEAR",
+        "bedrock_id": "polar_bear",
+        "numeric_id": 28,
+        "display_name": "Polar Bear"
+      },
+      {
+        "constant": "LLAMA",
+        "bedrock_id": "llama",
+        "numeric_id": 29,
+        "display_name": "Llama"
+      },
+      {
+        "constant": "PARROT",
+        "bedrock_id": "parrot",
+        "numeric_id": 30,
+        "display_name": "Parrot"
+      },
+      {
+        "constant": "DOLPHIN",
+        "bedrock_id": "dolphin",
+        "numeric_id": 31,
+        "display_name": "Dolphin"
+      },
+      {
+        "constant": "TURTLE",
+        "bedrock_id": "turtle",
+        "numeric_id": 74,
+        "display_name": "Turtle"
+      },
+      {
+        "constant": "CAT",
+        "bedrock_id": "cat",
+        "numeric_id": 75,
+        "display_name": "Cat"
+      },
+      {
+        "constant": "PANDA",
+        "bedrock_id": "panda",
+        "numeric_id": 113,
+        "display_name": "Panda"
+      },
+      {
+        "constant": "FOX",
+        "bedrock_id": "fox",
+        "numeric_id": 121,
+        "display_name": "Fox"
+      },
+      {
+        "constant": "BEE",
+        "bedrock_id": "bee",
+        "numeric_id": 122,
+        "display_name": "Bee"
+      },
+      {
+        "constant": "STRIDER",
+        "bedrock_id": "strider",
+        "numeric_id": 125,
+        "display_name": "Strider"
+      },
+      {
+        "constant": "AXOLOTL",
+        "bedrock_id": "axolotl",
+        "numeric_id": 130,
+        "display_name": "Axolotl"
+      },
+      {
+        "constant": "GOAT",
+        "bedrock_id": "goat",
+        "numeric_id": 128,
+        "display_name": "Goat"
+      },
+      {
+        "constant": "FROG",
+        "bedrock_id": "frog",
+        "numeric_id": 132,
+        "display_name": "Frog"
+      },
+      {
+        "constant": "ALLAY",
+        "bedrock_id": "allay",
+        "numeric_id": 134,
+        "display_name": "Allay"
+      },
+      {
+        "constant": "CAMEL",
+        "bedrock_id": "camel",
+        "numeric_id": 138,
+        "display_name": "Camel"
+      },
+      {
+        "constant": "SNIFFER",
+        "bedrock_id": "sniffer",
+        "numeric_id": 139,
+        "display_name": "Sniffer"
+      },
+      {
+        "constant": "ARMADILLO",
+        "bedrock_id": "armadillo",
+        "numeric_id": 142,
+        "display_name": "Armadillo"
+      }
+    ],
+    "hostile": [
+      {
+        "constant": "ZOMBIE",
+        "bedrock_id": "zombie",
+        "numeric_id": 32,
+        "display_name": "Zombie"
+      },
+      {
+        "constant": "CREEPER",
+        "bedrock_id": "creeper",
+        "numeric_id": 33,
+        "display_name": "Creeper"
+      },
+      {
+        "constant": "SKELETON",
+        "bedrock_id": "skeleton",
+        "numeric_id": 34,
+        "display_name": "Skeleton"
+      },
+      {
+        "constant": "SPIDER",
+        "bedrock_id": "spider",
+        "numeric_id": 35,
+        "display_name": "Spider"
+      },
+      {
+        "constant": "ZOMBIE_PIGMAN",
+        "bedrock_id": "zombie_pigman",
+        "numeric_id": 36,
+        "display_name": "Zombified Piglin"
+      },
+      {
+        "constant": "SLIME",
+        "bedrock_id": "slime",
+        "numeric_id": 37,
+        "display_name": "Slime"
+      },
+      {
+        "constant": "ENDERMAN",
+        "bedrock_id": "enderman",
+        "numeric_id": 38,
+        "display_name": "Enderman"
+      },
+      {
+        "constant": "SILVERFISH",
+        "bedrock_id": "silverfish",
+        "numeric_id": 39,
+        "display_name": "Silverfish"
+      },
+      {
+        "constant": "CAVE_SPIDER",
+        "bedrock_id": "cave_spider",
+        "numeric_id": 40,
+        "display_name": "Cave Spider"
+      },
+      {
+        "constant": "GHAST",
+        "bedrock_id": "ghast",
+        "numeric_id": 41,
+        "display_name": "Ghast"
+      },
+      {
+        "constant": "MAGMA_CUBE",
+        "bedrock_id": "magma_cube",
+        "numeric_id": 42,
+        "display_name": "Magma Cube"
+      },
+      {
+        "constant": "BLAZE",
+        "bedrock_id": "blaze",
+        "numeric_id": 43,
+        "display_name": "Blaze"
+      },
+      {
+        "constant": "ZOMBIE_VILLAGER",
+        "bedrock_id": "zombie_villager",
+        "numeric_id": 44,
+        "display_name": "Zombie Villager"
+      },
+      {
+        "constant": "WITCH",
+        "bedrock_id": "witch",
+        "numeric_id": 45,
+        "display_name": "Witch"
+      },
+      {
+        "constant": "STRAY",
+        "bedrock_id": "stray",
+        "numeric_id": 46,
+        "display_name": "Stray"
+      },
+      {
+        "constant": "HUSK",
+        "bedrock_id": "husk",
+        "numeric_id": 47,
+        "display_name": "Husk"
+      },
+      {
+        "constant": "WITHER_SKELETON",
+        "bedrock_id": "wither_skeleton",
+        "numeric_id": 48,
+        "display_name": "Wither Skeleton"
+      },
+      {
+        "constant": "GUARDIAN",
+        "bedrock_id": "guardian",
+        "numeric_id": 49,
+        "display_name": "Guardian"
+      },
+      {
+        "constant": "ELDER_GUARDIAN",
+        "bedrock_id": "elder_guardian",
+        "numeric_id": 50,
+        "display_name": "Elder Guardian"
+      },
+      {
+        "constant": "WITHER",
+        "bedrock_id": "wither",
+        "numeric_id": 52,
+        "display_name": "Wither"
+      },
+      {
+        "constant": "ENDER_DRAGON",
+        "bedrock_id": "ender_dragon",
+        "numeric_id": 53,
+        "display_name": "Ender Dragon"
+      },
+      {
+        "constant": "SHULKER",
+        "bedrock_id": "shulker",
+        "numeric_id": 54,
+        "display_name": "Shulker"
+      },
+      {
+        "constant": "ENDERMITE",
+        "bedrock_id": "endermite",
+        "numeric_id": 55,
+        "display_name": "Endermite"
+      },
+      {
+        "constant": "VINDICATOR",
+        "bedrock_id": "vindicator",
+        "numeric_id": 57,
+        "display_name": "Vindicator"
+      },
+      {
+        "constant": "PHANTOM",
+        "bedrock_id": "phantom",
+        "numeric_id": 58,
+        "display_name": "Phantom"
+      },
+      {
+        "constant": "RAVAGER",
+        "bedrock_id": "ravager",
+        "numeric_id": 59,
+        "display_name": "Ravager"
+      },
+      {
+        "constant": "DROWNED",
+        "bedrock_id": "drowned",
+        "numeric_id": 110,
+        "display_name": "Drowned"
+      },
+      {
+        "constant": "PILLAGER",
+        "bedrock_id": "pillager",
+        "numeric_id": 114,
+        "display_name": "Pillager"
+      },
+      {
+        "constant": "HOGLIN",
+        "bedrock_id": "hoglin",
+        "numeric_id": 124,
+        "display_name": "Hoglin"
+      },
+      {
+        "constant": "PIGLIN",
+        "bedrock_id": "piglin",
+        "numeric_id": 123,
+        "display_name": "Piglin"
+      },
+      {
+        "constant": "ZOGLIN",
+        "bedrock_id": "zoglin",
+        "numeric_id": 126,
+        "display_name": "Zoglin"
+      },
+      {
+        "constant": "PIGLIN_BRUTE",
+        "bedrock_id": "piglin_brute",
+        "numeric_id": 127,
+        "display_name": "Piglin Brute"
+      },
+      {
+        "constant": "WARDEN",
+        "bedrock_id": "warden",
+        "numeric_id": 131,
+        "display_name": "Warden"
+      },
+      {
+        "constant": "BREEZE",
+        "bedrock_id": "breeze",
+        "numeric_id": 141,
+        "display_name": "Breeze"
+      },
+      {
+        "constant": "BOGGED",
+        "bedrock_id": "bogged",
+        "numeric_id": 144,
+        "display_name": "Bogged"
+      }
+    ],
+    "special": [
+      {
+        "constant": "IRON_GOLEM",
+        "bedrock_id": "iron_golem",
+        "numeric_id": 20,
+        "display_name": "Iron Golem"
+      },
+      {
+        "constant": "SNOW_GOLEM",
+        "bedrock_id": "snow_golem",
+        "numeric_id": 21,
+        "display_name": "Snow Golem"
+      },
+      {
+        "constant": "LIGHTNING_BOLT",
+        "bedrock_id": "lightning_bolt",
+        "numeric_id": 93,
+        "display_name": "Lightning Bolt",
+        "notes": "Not a living entity — summons lightning at position"
+      },
+      {
+        "constant": "WANDERING_TRADER",
+        "bedrock_id": "wandering_trader",
+        "numeric_id": 118,
+        "display_name": "Wandering Trader"
+      },
+      {
+        "constant": "EVOKER",
+        "bedrock_id": "evocation_illager",
+        "numeric_id": 104,
+        "display_name": "Evoker"
+      },
+      {
+        "constant": "VEX",
+        "bedrock_id": "vex",
+        "numeric_id": 105,
+        "display_name": "Vex"
+      },
+      {
+        "constant": "NPC",
+        "bedrock_id": "npc",
+        "numeric_id": 51,
+        "display_name": "NPC",
+        "notes": "Education Edition only"
+      },
+      {
+        "constant": "AGENT",
+        "bedrock_id": "agent",
+        "numeric_id": 56,
+        "display_name": "Agent",
+        "notes": "Education Edition only — the programmable agent"
+      }
+    ]
+  },
+  "selectors": {
+    "_note": "Selector constants used with mobs.target(), gameplay.setGameMode() etc.",
+    "values": [
+      {
+        "constant": "LOCAL_PLAYER",
+        "display_name": "Local Player",
+        "description": "The player running the code"
+      },
+      {
+        "constant": "NEAREST_PLAYER",
+        "display_name": "Nearest Player",
+        "description": "Closest player to the event origin"
+      },
+      {
+        "constant": "ALL_PLAYERS",
+        "display_name": "All Players",
+        "description": "Every player in the world"
+      },
+      {
+        "constant": "ALL_ENTITIES",
+        "display_name": "All Entities",
+        "description": "All living entities in the world"
+      },
+      {
+        "constant": "RANDOM_PLAYER",
+        "display_name": "Random Player",
+        "description": "A randomly selected player"
+      }
+    ]
+  }
+}

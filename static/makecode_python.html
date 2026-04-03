@@ -1,0 +1,892 @@
+# MakeCode Python for Minecraft Education — Tutor Reference
+
+> **Purpose:** This document defines the exact Python dialect used in Microsoft MakeCode for Minecraft Education. When tutoring students in this environment, you MUST follow these rules precisely. Do not suggest standard Python libraries, imports, or features that are not available in this runtime.
+
+---
+
+## 1. What MakeCode Python Is (and Isn't)
+
+MakeCode Python is a **subset of Python** that compiles to JavaScript/TypeScript and runs inside Minecraft Education. It is **not** CPython, PyPy, or any standard Python runtime.
+
+### HARD CONSTRAINTS — never violate these
+
+| Constraint | Detail |
+|---|---|
+| **No `import` statements** | No `import math`, `import random`, `import time`, `import os`, etc. None. Zero. |
+| **No standard library** | `len()`, `range()`, `str()`, `int()`, `abs()`, `min()`, `max()` work. Most others do not. |
+| **No `print()`** | Use `player.say()` to output text to the Minecraft chat. |
+| **No `input()`** | User interaction happens through `player.onChat()` event handlers. |
+| **No file I/O** | No `open()`, no reading/writing files. |
+| **No classes with inheritance** | Basic class syntax exists but keep it simple. |
+| **No exception handling** | No `try`/`except`/`finally`/`raise`. |
+| **No f-strings** | Use string concatenation with `str()` conversion instead. |
+| **No list comprehensions** | Use explicit `for` loops with `.append()`. |
+| **No `lambda`** | Use `def` to define all functions. |
+| **No `*args` / `**kwargs`** | Fixed-signature functions only. |
+| **No `global` keyword** | Variables declared outside functions are accessible but avoid complex scoping. |
+| **No `enumerate()` or `zip()`** | Use index-based loops with `range()`. |
+| **No `dict` / `{}` literals** | No dictionary type available. |
+| **No `tuple`** | Use lists `[]` instead. |
+| **No `None` comparisons with `is`** | Use `== None` if checking for null. |
+| **No `type()` or `isinstance()`** | Not available. |
+| **No `assert`** | Not available. |
+
+---
+
+## 2. The Event-Driven Model
+
+MakeCode Python is **event-driven**, not procedural top-to-bottom. Code runs in response to Minecraft events. The most important event is:
+
+```python
+def on_chat():
+    player.say("Hello!")
+
+player.on_chat("hello", on_chat)
+```
+
+**There is no `main()` function or top-level execution loop.** All top-level code runs once at startup. The primary way to respond to student input is `player.on_chat()`.
+
+### Common Event Pattern
+
+```python
+def on_chat_hello():
+    player.say("You said hello!")
+
+player.on_chat("hello", on_chat_hello)
+```
+
+### Event with Arguments
+
+```python
+def on_chat_tp(num1, num2, num3):
+    player.teleport(world(num1, num2, num3))
+
+player.on_chat("tp", on_chat_tp)
+```
+
+**Important:** `on_chat` callback parameters receive chat command arguments as numbers automatically.
+
+---
+
+## 3. Supported Python Syntax
+
+### Variables
+
+```python
+x = 10
+name = "Steve"
+is_alive = True
+my_list = []
+```
+
+No type annotations. Variables are dynamically typed.
+
+### Arithmetic Operators
+
+```python
+x + y    # addition
+x - y    # subtraction
+x * y    # multiplication
+x / y    # division (returns float)
+x % y    # modulo
+x ** y   # exponentiation
+```
+
+### Comparison Operators
+
+```python
+x == y   # equal
+x != y   # not equal
+x < y    # less than
+x > y    # greater than
+x <= y   # less than or equal
+x >= y   # greater than or equal
+```
+
+### Boolean Operators
+
+```python
+x and y
+x or y
+not x
+True
+False
+```
+
+### Conditionals
+
+```python
+if x > 10:
+    player.say("big")
+elif x > 5:
+    player.say("medium")
+else:
+    player.say("small")
+```
+
+### While Loop
+
+```python
+i = 0
+while i < 10:
+    player.say(str(i))
+    i += 1
+```
+
+### For Loop
+
+```python
+for i in range(5):
+    player.say(str(i))
+
+# For loop over a list
+items = [1, 2, 3]
+for item in items:
+    player.say(str(item))
+```
+
+### Functions
+
+```python
+def greet(name):
+    player.say("Hello " + name)
+
+greet("Alex")
+```
+
+Functions can return values:
+
+```python
+def add(a, b):
+    return a + b
+
+result = add(3, 4)
+player.say(str(result))
+```
+
+### Lists (Arrays)
+
+```python
+my_list = []
+my_list.append(42)
+my_list.append("hello")
+
+length = len(my_list)
+first = my_list[0]
+
+# Remove last item
+my_list.pop()
+
+# Check if empty
+if len(my_list) == 0:
+    player.say("empty")
+```
+
+**Available list methods:** `.append()`, `.pop()`, `.removeAt()` (index), `.indexOf()`, `.reverse()`, `.length` (property).
+
+### String Operations
+
+```python
+msg = "Hello" + " " + "World"
+player.say(msg)
+player.say(str(42))          # Convert number to string
+player.say(str(3.14))        # Convert float to string
+```
+
+**No f-strings.** Always use `str()` and `+` concatenation.
+
+### Math (Built-in, No Import Needed)
+
+```python
+# These are available globally without import:
+abs(-5)          # absolute value → 5
+min(3, 7)        # minimum → 3
+max(3, 7)        # maximum → 7
+
+# Math namespace (MakeCode-specific):
+Math.floor(3.7)  # → 3
+Math.ceil(3.2)   # → 4
+Math.round(3.5)  # → 4
+Math.sqrt(16)    # → 4
+Math.abs(-5)     # → 5
+Math.random()    # → float between 0.0 and 1.0
+
+# Random integer between min and max (inclusive):
+randint(0, 9)    # → random int
+```
+
+**Note:** Use `Math.floor()`, `Math.random()` etc. — not `math.floor()`. The `Math` object (capital M) is always available without importing.
+
+### Control Flow
+
+```python
+break       # exit loop
+continue    # skip to next iteration
+pass        # do nothing (placeholder)
+return      # return from function
+return x    # return value from function
+```
+
+---
+
+## 4. The Eight Namespaces
+
+All Minecraft interaction happens through these eight built-in namespaces. They are always available — no import needed.
+
+### 4.1 `player` — The Player
+
+```python
+# Output text to chat
+player.say("Hello!")
+
+# Teleport player to a position
+player.teleport(pos(0, 0, 0))
+
+# Get player's current position
+my_pos = player.position()
+
+# Get player name
+name = player.name()
+
+# Event: respond to a chat command
+def on_chat_jump():
+    player.teleport(pos(0, 10, 0))
+
+player.on_chat("jump", on_chat_jump)
+
+# Run a chat command programmatically
+player.run_chat_command("jump")
+
+# Event: player died
+def on_died():
+    player.say("You died!")
+
+player.on_died(on_died)
+
+# Event: player travelled
+def on_walked():
+    pass
+
+player.on_travelled(TravelMethod.WALK, on_walked)
+
+# Event: item used
+def on_shovel():
+    player.say("Shovel used!")
+
+player.on_item_interacted(IRON_SHOVEL, on_shovel)
+
+# Execute a raw Minecraft command
+player.execute("say Hi!")
+```
+
+### 4.2 `blocks` — Block Manipulation
+
+```python
+# Place a single block
+blocks.place(GRASS, pos(0, 0, 0))
+
+# Fill a region with blocks
+blocks.fill(GRASS, pos(0, 0, 0), pos(5, 5, 5), FillOperation.REPLACE)
+
+# Test if a block exists at position
+if blocks.test_for_block(GRASS, pos(0, 0, 0)):
+    player.say("Found grass!")
+
+# Replace one block type with another
+blocks.replace(DIRT, GRASS, pos(-5, -5, -5), pos(5, 5, 5))
+
+# Clone a region
+blocks.clone(pos(0, 0, 0), pos(5, 5, 5), pos(10, 10, 10),
+             CloneMask.REPLACE, CloneMode.NORMAL)
+
+# Print text in blocks
+blocks.print("HI", GOLD_BLOCK, pos(0, 0, 0), WEST)
+
+# Events
+def on_grass_placed():
+    player.say("Grass placed!")
+
+blocks.on_block_placed(GRASS, on_grass_placed)
+
+def on_grass_broken():
+    player.say("Grass broken!")
+
+blocks.on_block_broken(GRASS, on_grass_broken)
+```
+
+**Fill Operations:** `FillOperation.REPLACE`, `FillOperation.DESTROY`, `FillOperation.KEEP`, `FillOperation.HOLLOW`, `FillOperation.OUTLINE`
+
+### 4.3 `mobs` — Entities and Mobs
+
+```python
+# Spawn a mob at a position
+mobs.spawn(PIG, pos(0, 0, 0))
+
+# Kill mobs by selector
+mobs.kill(mobs.target(ALL_ENTITIES))
+
+# Event: mob killed
+def on_chicken_killed():
+    player.say("Chicken killed!")
+
+mobs.on_mob_killed(CHICKEN, on_chicken_killed)
+
+# Teleport mobs
+mobs.teleport_to_position(mobs.target(ALL_PLAYERS), pos(0, 0, 0))
+
+# Give an item to a mob/player
+mobs.give(mobs.target(NEAREST_PLAYER), DIAMOND, 5)
+
+# Apply a status effect
+mobs.apply_effect(Effect.SPEED, mobs.target(NEAREST_PLAYER), 10, 1)
+
+# Clear effects
+mobs.clear_effect(mobs.target(NEAREST_PLAYER))
+```
+
+**Selectors:** `LOCAL_PLAYER`, `NEAREST_PLAYER`, `ALL_PLAYERS`, `ALL_ENTITIES`, `RANDOM_PLAYER`
+
+**Selector methods:**
+```python
+mobs.target(NEAREST_PLAYER).within_radius(5)
+mobs.target(ALL_ENTITIES).outside_radius(10)
+mobs.entities_by_type(CHICKEN)
+mobs.player_by_name("Steve")
+```
+
+### 4.4 `agent` — The Agent
+
+The Agent is a programmable robot that exists in the Minecraft world.
+
+```python
+# Movement
+agent.move(FORWARD, 1)       # Move 1 block forward
+agent.move(BACK, 3)          # Move 3 blocks back
+agent.move(UP, 2)
+agent.move(DOWN, 1)
+agent.turn(TurnDirection.LEFT)
+agent.turn(TurnDirection.RIGHT)
+
+# Teleportation
+agent.teleport_to_player()
+agent.teleport(pos(0, 0, 0), WEST)
+
+# Position/orientation
+pos = agent.get_position()
+facing = agent.get_orientation()
+
+# Detection
+if agent.detect(AgentDetection.BLOCK, FORWARD):
+    player.say("Block ahead!")
+
+# Actions
+agent.place(BACK)            # Place block from inventory
+agent.destroy(FORWARD)       # Break block in direction
+agent.attack(FORWARD)        # Attack in direction
+agent.till(FORWARD)          # Till soil
+agent.interact(FORWARD)      # Interact with block/entity
+
+# Inventory
+agent.set_slot(1)            # Select inventory slot (1-27)
+agent.collect_all()          # Collect nearby items
+agent.get_item_count(1)      # Items in slot
+agent.get_item_detail(1)     # Info about item in slot
+agent.drop(FORWARD, 1, 1)    # Drop from slot 1, amount 1, in direction
+agent.drop_all(FORWARD)
+
+# Assist modes
+agent.set_assist(PLACE_ON_MOVE, True)
+agent.set_assist(DESTROY_OBSTACLES, True)
+```
+
+**Directions:** `FORWARD`, `BACK`, `LEFT`, `RIGHT`, `UP`, `DOWN`
+
+### 4.5 `builder` — Path-based Builder
+
+The Builder traces a path and places blocks along it.
+
+```python
+builder.line(GLASS)          # Place block at current position, move forward
+builder.turn_left()
+builder.turn_right()
+builder.face(NORTH)          # Face a cardinal direction
+builder.mark()               # Mark current position
+builder.teleport_to_mark()   # Return to marked position
+builder.move(FORWARD, 5)     # Move without placing
+```
+
+### 4.6 `gameplay` — Game Settings
+
+```python
+# Set game mode for a player/mob selector
+gameplay.set_game_mode(SURVIVAL, mobs.target(NEAREST_PLAYER))
+gameplay.set_game_mode(CREATIVE, mobs.target(LOCAL_PLAYER))
+gameplay.set_game_mode(ADVENTURE, mobs.target(ALL_PLAYERS))
+
+# Weather
+gameplay.set_weather(CLEAR)
+gameplay.set_weather(RAIN)
+gameplay.set_weather(THUNDER)
+
+# Time
+gameplay.set_time(0)     # Dawn
+gameplay.set_time(6000)  # Noon
+gameplay.set_time(13000) # Dusk
+gameplay.set_time(18000) # Night
+
+# Score management
+gameplay.set_score("myscore", mobs.target(LOCAL_PLAYER), 0)
+gameplay.change_score_by("myscore", mobs.target(LOCAL_PLAYER), 1)
+gameplay.get_score("myscore", mobs.target(LOCAL_PLAYER))
+```
+
+### 4.7 `positions` — Position Helpers
+
+```python
+# Add two positions
+new_pos = positions.add(player.position(), pos(5, 0, 5))
+
+# Check equality
+if positions.equals(pos(0, 0, 0), player.position()):
+    player.say("At origin!")
+
+# Random position within a region
+r = randpos(pos(-10, 0, -10), pos(10, 0, 10))
+
+# Get axis value
+x_val = player.position().get_value(Axis.X)
+y_val = player.position().get_value(Axis.Y)
+z_val = player.position().get_value(Axis.Z)
+
+# Ground position
+ground = positions.ground_position(pos(0, 100, 0))
+```
+
+### 4.8 `shapes` — 3D Geometric Shapes
+
+```python
+shapes.line(GRASS, pos(0, 0, 0), pos(10, 0, 0))
+shapes.circle(GLASS, pos(0, 0, 0), 5, Axis.Y, ShapeOperation.REPLACE)
+shapes.sphere(DIAMOND_BLOCK, pos(0, 0, 0), 3, ShapeOperation.REPLACE)
+shapes.box(DIRT, pos(-5, 0, -5), pos(5, 5, 5), ShapeOperation.OUTLINE)
+```
+
+---
+
+## 5. The Position System
+
+Positions are a core concept. There are four types:
+
+### `pos(x, y, z)` — Relative Position (most common)
+
+Relative to the **player's current feet position**. Uses `~` internally.
+
+```python
+pos(0, 0, 0)    # Player's feet
+pos(0, 1, 0)    # One block above player's feet (head level)
+pos(5, 0, 0)    # 5 blocks east of player
+pos(-3, -2, 0)  # 3 west, 2 below
+```
+
+### `world(x, y, z)` — Absolute/World Position
+
+Fixed coordinates in the world that never change.
+
+```python
+world(0, 64, 0)     # Absolute world coordinates
+world(100, 70, -50) # Specific location in the world
+```
+
+### `posLocal(x, y, z)` — Local (Player-facing) Position
+
+Relative to the direction the player is **facing**. `z` = forward/backward.
+
+```python
+posLocal(0, 0, 3)    # 3 blocks in front of player
+posLocal(-1, 0, 0)   # 1 block to player's left
+posLocal(0, 2, 0)    # 2 blocks above player
+```
+
+### `posCamera(x, y, z)` — Camera/Facing Position
+
+Same as local but named for camera orientation.
+
+```python
+posCamera(0, 0, 5)   # 5 blocks in direction player is looking
+```
+
+### Position Arithmetic
+
+```python
+p = positions.add(player.position(), pos(10, 0, 10))
+```
+
+---
+
+## 6. Block and Item Constants
+
+Block and item types are **UPPERCASE constants** — never strings. They are always available globally.
+
+### Common Block Constants
+
+```
+AIR, GRASS, DIRT, STONE, COBBLESTONE, OAK_WOOD_PLANKS, OAK_LOG,
+SAND, GRAVEL, GLASS, WATER, LAVA, TNT, BEDROCK, OBSIDIAN,
+GOLD_BLOCK, IRON_BLOCK, DIAMOND_BLOCK, EMERALD_BLOCK,
+BRICK_BLOCK, CLAY, ICE, SNOW, SANDSTONE, NETHERRACK,
+WOOL, CONCRETE, TERRACOTTA, LEAVES, SPONGE,
+GLOWSTONE, SEA_LANTERN, TORCH, LADDER
+```
+
+### Common Item Constants (for agent/mobs inventory)
+
+```
+IRON_SHOVEL, IRON_PICKAXE, IRON_AXE, IRON_SWORD,
+DIAMOND_SWORD, BOW, ARROW, DIAMOND, GOLD_INGOT,
+IRON_INGOT, COAL, STICK, BOOK, PAPER
+```
+
+### Direction Constants
+
+```
+NORTH, SOUTH, EAST, WEST
+UP, DOWN
+FORWARD, BACK, LEFT, RIGHT  (used with agent.move() and agent.place())
+```
+
+### Mob Constants
+
+```
+PIG, CHICKEN, COW, SHEEP, WOLF, CAT, HORSE, RABBIT,
+CREEPER, ZOMBIE, SKELETON, SPIDER, ENDERMAN, BLAZE,
+VILLAGER, LIGHTNING_BOLT
+```
+
+### Enums Used in API Calls
+
+```python
+TurnDirection.LEFT
+TurnDirection.RIGHT
+
+AgentDetection.BLOCK
+AgentDetection.ENTITY
+
+FillOperation.REPLACE
+FillOperation.DESTROY
+FillOperation.KEEP
+FillOperation.HOLLOW
+FillOperation.OUTLINE
+
+CloneMask.REPLACE
+CloneMask.MASKED
+
+CloneMode.NORMAL
+CloneMode.MOVE
+CloneMode.FORCE
+
+TravelMethod.WALK
+TravelMethod.RUN
+TravelMethod.SWIM
+TravelMethod.FLY
+
+Axis.X
+Axis.Y
+Axis.Z
+
+Effect.SPEED
+Effect.SLOWNESS
+Effect.HASTE
+Effect.MINING_FATIGUE
+Effect.STRENGTH
+Effect.JUMP_BOOST
+Effect.NAUSEA
+Effect.REGENERATION
+Effect.INVISIBILITY
+Effect.BLINDNESS
+Effect.FIRE_RESISTANCE
+Effect.WATER_BREATHING
+Effect.NIGHT_VISION
+Effect.HUNGER
+Effect.WEAKNESS
+Effect.POISON
+Effect.WITHER
+
+ShapeOperation.REPLACE
+ShapeOperation.OUTLINE
+ShapeOperation.HOLLOW
+
+SURVIVAL
+CREATIVE
+ADVENTURE
+
+CLEAR   # (weather)
+RAIN
+THUNDER
+
+ALL_PLAYERS
+LOCAL_PLAYER
+NEAREST_PLAYER
+ALL_ENTITIES
+RANDOM_PLAYER
+
+PLACE_ON_MOVE     # (agent assist)
+DESTROY_OBSTACLES
+```
+
+---
+
+## 7. Common Mistakes to Correct
+
+When a student writes code with any of these patterns, flag and correct it:
+
+### ❌ Using `import`
+```python
+# WRONG
+import math
+import random
+```
+```python
+# CORRECT — use built-ins or Math object
+x = Math.floor(3.7)
+r = randint(0, 10)
+```
+
+### ❌ Using `print()`
+```python
+# WRONG
+print("Hello")
+```
+```python
+# CORRECT
+player.say("Hello")
+```
+
+### ❌ Using `input()`
+```python
+# WRONG
+name = input("What is your name?")
+```
+```python
+# CORRECT — use a chat command with arguments
+def on_chat_name(name):
+    player.say("Hello " + name)
+
+player.on_chat("name", on_chat_name)
+```
+
+### ❌ Using f-strings
+```python
+# WRONG
+player.say(f"Score: {score}")
+```
+```python
+# CORRECT
+player.say("Score: " + str(score))
+```
+
+### ❌ Using `math.` (lowercase)
+```python
+# WRONG
+import math
+math.sqrt(16)
+```
+```python
+# CORRECT
+Math.sqrt(16)
+```
+
+### ❌ Using `random.` module
+```python
+# WRONG
+import random
+random.randint(1, 10)
+```
+```python
+# CORRECT
+randint(1, 10)
+```
+
+### ❌ Passing block type as a string
+```python
+# WRONG
+blocks.place("grass", pos(0, 0, 0))
+```
+```python
+# CORRECT
+blocks.place(GRASS, pos(0, 0, 0))
+```
+
+### ❌ Using list comprehensions
+```python
+# WRONG
+doubled = [x * 2 for x in my_list]
+```
+```python
+# CORRECT
+doubled = []
+for x in my_list:
+    doubled.append(x * 2)
+```
+
+### ❌ Using `try`/`except`
+```python
+# WRONG — not supported
+try:
+    x = int("hello")
+except ValueError:
+    player.say("Error")
+```
+
+### ❌ Using lambdas
+```python
+# WRONG
+player.on_chat("run", lambda: agent.move(FORWARD, 1))
+```
+```python
+# CORRECT
+def on_chat_run():
+    agent.move(FORWARD, 1)
+
+player.on_chat("run", on_chat_run)
+```
+
+### ❌ Using string positions instead of pos()
+```python
+# WRONG
+blocks.place(GRASS, "0 0 0")
+```
+```python
+# CORRECT
+blocks.place(GRASS, pos(0, 0, 0))
+```
+
+---
+
+## 8. Complete Working Example Programs
+
+### Example 1: Basic Chat Command
+
+```python
+def on_chat_hello():
+    player.say("Hello, Minecraft world!")
+
+player.on_chat("hello", on_chat_hello)
+```
+
+### Example 2: Spawn Chickens in a Loop
+
+```python
+def on_chat_chickens():
+    for i in range(5):
+        mobs.spawn(CHICKEN, pos(i, 0, 0))
+    player.say("Spawned 5 chickens!")
+
+player.on_chat("chickens", on_chat_chickens)
+```
+
+### Example 3: Build a Floor
+
+```python
+def on_chat_floor():
+    blocks.fill(OAK_WOOD_PLANKS, pos(-5, -1, -5), pos(5, -1, 5), FillOperation.REPLACE)
+    player.say("Floor built!")
+
+player.on_chat("floor", on_chat_floor)
+```
+
+### Example 4: Agent Builds a Tower
+
+```python
+def on_chat_tower():
+    agent.teleport_to_player()
+    agent.set_slot(1)
+    for i in range(10):
+        agent.place(BACK)
+        agent.move(UP, 1)
+    player.say("Tower done!")
+
+player.on_chat("tower", on_chat_tower)
+```
+
+### Example 5: Using Variables and Maths
+
+```python
+score = 0
+
+def on_chat_score():
+    score = score + 10
+    player.say("Score: " + str(score))
+
+player.on_chat("score", on_chat_score)
+```
+
+### Example 6: Conditional Logic
+
+```python
+def on_chat_check(num):
+    if num > 10:
+        player.say("Big number!")
+    elif num > 5:
+        player.say("Medium number!")
+    else:
+        player.say("Small number!")
+
+player.on_chat("check", on_chat_check)
+```
+
+### Example 7: Function with Return Value
+
+```python
+def double(n):
+    return n * 2
+
+def on_chat_double(num):
+    result = double(num)
+    player.say(str(num) + " doubled is " + str(result))
+
+player.on_chat("double", on_chat_double)
+```
+
+### Example 8: Agent Uses Detection
+
+```python
+def on_chat_walk():
+    for i in range(10):
+        if agent.detect(AgentDetection.BLOCK, FORWARD):
+            agent.destroy(FORWARD)
+        agent.move(FORWARD, 1)
+
+player.on_chat("walk", on_chat_walk)
+```
+
+---
+
+## 9. Tutoring Guidelines
+
+When acting as a Socratic tutor for MakeCode Python:
+
+1. **Never suggest `import`** — there are no libraries to import.
+2. **Always use `player.say()`** for output, never `print()`.
+3. **All event handling uses `player.on_chat()`** — never `input()`.
+4. **Block/mob types are UPPERCASE constants**, not strings.
+5. **Positions use `pos()`, `world()`, `posLocal()`, or `posCamera()`** — never coordinate strings.
+6. **String concatenation only** — no f-strings, no `.format()`.
+7. **`Math.` (capital M)** for math functions — no `import math`.
+8. **`randint(a, b)`** for random integers — no `random.randint()`.
+9. If a student's code would work in standard Python but not in MakeCode, explain the constraint gently and guide them to the MakeCode equivalent.
+10. Praise the thinking behind their approach before redirecting to the correct MakeCode syntax.
+
+---
+
+## 10. Reference URLs
+
+- Full reference: https://minecraft.makecode.com/reference
+- Python syntax: https://minecraft.makecode.com/python
+- Player API: https://minecraft.makecode.com/reference/player
+- Blocks API: https://minecraft.makecode.com/reference/blocks
+- Mobs API: https://minecraft.makecode.com/reference/mobs
+- Agent API: https://minecraft.makecode.com/reference/agent
+- Builder API: https://minecraft.makecode.com/reference/builder
+- Gameplay API: https://minecraft.makecode.com/reference/gameplay
+- Positions API: https://minecraft.makecode.com/reference/positions
+- Shapes API: https://minecraft.makecode.com/reference/shapes

@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+settings.json
+*.pyc
+.DS_Store
+server.log
+scripts/

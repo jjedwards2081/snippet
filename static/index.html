@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snippet</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+</head>
+<body>
+    <!-- Top Bar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <span class="app-title">Snippet</span>
+        </div>
+        <div class="topbar-right">
+            <div id="connection-status" class="connection-status disconnected" title="Not connected">
+                <span class="status-dot"></span>
+                <span class="status-text">Not connected</span>
+            </div>
+            <button id="btn-new" class="topbar-btn" title="New Script">New</button>
+            <button id="btn-save" class="topbar-btn" title="Save Script">Save</button>
+            <button id="btn-load" class="topbar-btn" title="Load Script">Load</button>
+            <button id="btn-settings" class="topbar-btn" title="Settings">Settings</button>
+            <button id="btn-about" class="topbar-btn" title="About">About</button>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="main">
+        <!-- Left: Chat -->
+        <div class="panel chat-panel">
+            <div class="panel-header">MakeCode Python Tutor</div>
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input-area">
+                <textarea id="chat-input" placeholder="Type your answer..." rows="3"></textarea>
+                <button id="btn-send" class="send-btn">Send</button>
+            </div>
+            <div class="ai-disclaimer">AI-generated content may be incorrect</div>
+        </div>
+
+        <!-- Resizer -->
+        <div class="resizer" id="resizer"></div>
+
+        <!-- Right: Editor -->
+        <div class="panel editor-panel">
+            <div class="panel-header">
+                <span id="editor-filename">untitled.py</span>
+                <button id="btn-copy" class="copy-btn" title="Copy code to clipboard">Copy</button>
+            </div>
+            <div id="editor-container"></div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <h2>Settings</h2>
+            <div class="settings-form">
+                <label>Provider</label>
+                <select id="set-provider">
+                    <option value="anthropic">Anthropic (Claude)</option>
+                    <option value="openai">OpenAI (ChatGPT)</option>
+                    <option value="azure">Azure Foundry</option>
+                </select>
+
+                <div id="anthropic-fields" class="provider-fields">
+                    <label>Anthropic API Key</label>
+                    <input type="password" id="set-anthropic-key" placeholder="sk-ant-...">
+                    <label>Model</label>
+                    <input type="text" id="set-anthropic-model" placeholder="claude-sonnet-4-20250514">
+                </div>
+
+                <div id="openai-fields" class="provider-fields hidden">
+                    <label>OpenAI API Key</label>
+                    <input type="password" id="set-openai-key" placeholder="sk-...">
+                    <label>Model</label>
+                    <input type="text" id="set-openai-model" placeholder="gpt-4o">
+                </div>
+
+                <div id="azure-fields" class="provider-fields hidden">
+                    <label>Azure API Key</label>
+                    <input type="password" id="set-azure-key" placeholder="API Key">
+                    <label>Azure Endpoint</label>
+                    <input type="text" id="set-azure-endpoint" placeholder="https://your-resource.openai.azure.com/">
+                    <label>Deployment Name</label>
+                    <input type="text" id="set-azure-deployment" placeholder="gpt-4o">
+                    <label>API Version</label>
+                    <input type="text" id="set-azure-version" placeholder="2024-02-01">
+                </div>
+
+                <div id="validation-result" class="validation-result hidden"></div>
+
+                <div class="modal-actions">
+                    <button id="btn-test-connection" class="btn-test">Test Connection</button>
+                    <button id="btn-save-settings" class="btn-primary">Save</button>
+                    <button id="btn-cancel-settings" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Browser Modal (used for both Load and Save) -->
+    <div id="file-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-content-wide">
+            <h2 id="file-modal-title">Open File</h2>
+            <div class="path-bar">
+                <button id="btn-up" class="btn-icon" title="Go up">&#8593; Up</button>
+                <button id="btn-home" class="btn-icon" title="Go to Home">Home</button>
+                <button id="btn-documents" class="btn-icon" title="Go to Documents">Documents</button>
+                <button id="btn-desktop" class="btn-icon" title="Go to Desktop">Desktop</button>
+                <input type="text" id="path-input" class="path-input" readonly>
+            </div>
+            <div id="file-list" class="file-list"></div>
+            <div id="save-bar" class="save-bar hidden">
+                <label>Filename</label>
+                <input type="text" id="save-filename" placeholder="my_script.py">
+            </div>
+            <div class="modal-actions">
+                <button id="btn-file-action" class="btn-primary">Open</button>
+                <button id="btn-file-cancel" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="about-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content modal-content-about">
+            <h2>About Snippet</h2>
+            <div class="about-body">
+                <p><strong>Snippet</strong> is a Socratic tutoring tool that teaches students MakeCode Python for Minecraft Education. An AI tutor guides learners step-by-step through building Minecraft projects, explaining coding concepts through questions and progressive code examples.</p>
+
+                <h3>Getting Started with API Providers</h3>
+                <p>Snippet requires an API key from one of the following providers to power the AI tutor. You only need one.</p>
+
+                <div class="about-provider">
+                    <h4>Anthropic (Claude)</h4>
+                    <ol>
+                        <li>Go to <strong>console.anthropic.com</strong> and create an account</li>
+                        <li>Navigate to <strong>API Keys</strong> and click <strong>Create Key</strong></li>
+                        <li>Copy the key (starts with <code>sk-ant-</code>)</li>
+                        <li>In Snippet, click <strong>Settings</strong>, select <strong>Anthropic (Claude)</strong>, paste your key, and click <strong>Save</strong></li>
+                    </ol>
+                </div>
+
+                <div class="about-provider">
+                    <h4>OpenAI (ChatGPT)</h4>
+                    <ol>
+                        <li>Go to <strong>platform.openai.com</strong> and create an account</li>
+                        <li>Navigate to <strong>API Keys</strong> and click <strong>Create new secret key</strong></li>
+                        <li>Copy the key (starts with <code>sk-</code>)</li>
+                        <li>In Snippet, click <strong>Settings</strong>, select <strong>OpenAI (ChatGPT)</strong>, paste your key, and click <strong>Save</strong></li>
+                    </ol>
+                </div>
+
+                <div class="about-provider">
+                    <h4>Azure AI Foundry</h4>
+                    <ol>
+                        <li>Go to the <strong>Azure Portal</strong> (portal.azure.com) and create an <strong>Azure OpenAI</strong> resource</li>
+                        <li>Deploy a model (e.g. GPT-4o) in <strong>Azure AI Foundry</strong></li>
+                        <li>From your resource, copy the <strong>API Key</strong> and <strong>Endpoint URL</strong></li>
+                        <li>In Snippet, click <strong>Settings</strong>, select <strong>Azure Foundry</strong>, enter your key, endpoint, and deployment name, then click <strong>Save</strong></li>
+                    </ol>
+                </div>
+
+                <h3>Open Source License &amp; Disclaimer</h3>
+                <div id="about-legal-content" class="about-legal">
+                    <p>This software ("Snippet") is provided as an open source solution under the MIT License.</p>
+                    <p><em>Loading terms...</em></p>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="btn-close-about" class="btn-primary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
