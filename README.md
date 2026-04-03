@@ -20,6 +20,10 @@ A Socratic tutoring web app that teaches students MakeCode Python for Minecraft 
 
 ## Getting Started
 
+A fully operation version of the latest code in this repo is avalible at https://snippet-app.azurewebsites.net/
+
+However, you can intall and use locally by following the instructions below.
+
 ### Prerequisites
 
 - Python 3.9 or later
