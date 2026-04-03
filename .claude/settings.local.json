@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/)",
+      "Bash(open http://localhost:8080)",
+      "Bash(lsof -ti:8080)",
+      "Bash(xargs kill:*)"
+    ]
+  }
+}
