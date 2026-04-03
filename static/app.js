@@ -13,6 +13,10 @@ let selectedFilePath = null;
 // Track the last code the AI set, to detect user edits
 let lastAICode = "";
 
+// Tutor preferences (persisted in localStorage)
+let ttsEnabled = localStorage.getItem("snippet_tts") === "true";
+let chatFontSize = parseInt(localStorage.getItem("snippet_font_size")) || 14;
+
 // --- Monaco Editor Setup ---
 require.config({ paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs" } });
 require(["vs/editor/editor.main"], function () {
@@ -105,6 +109,73 @@ const chatMessages = document.getElementById("chat-messages");
 const chatInput = document.getElementById("chat-input");
 const btnSend = document.getElementById("btn-send");
 
+// Apply saved font size on load
+function applyChatFontSize() {
+    chatMessages.style.fontSize = chatFontSize + "px";
+}
+applyChatFontSize();
+
+// --- Text-to-Speech (Edge-TTS via server) ---
+var ttsAudio = null;
+var ttsSpeakingEl = null;
+
+async function speakText(text, msgEl) {
+    if (!ttsEnabled) return;
+    if (!text) return;
+
+    // Stop any current playback and clear previous indicator
+    if (ttsAudio) {
+        ttsAudio.pause();
+        ttsAudio.currentTime = 0;
+    }
+    if (ttsSpeakingEl) {
+        ttsSpeakingEl.classList.remove("tts-loading", "tts-speaking");
+    }
+
+    // Show loading indicator on the message
+    if (msgEl) {
+        msgEl.classList.add("tts-loading");
+        ttsSpeakingEl = msgEl;
+    }
+
+    try {
+        var res = await fetch("/api/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: text }),
+        });
+
+        if (!res.ok) {
+            if (msgEl) msgEl.classList.remove("tts-loading");
+            return;
+        }
+
+        var blob = await res.blob();
+        var url = URL.createObjectURL(blob);
+        ttsAudio = new Audio(url);
+
+        // Switch from loading to speaking animation
+        if (msgEl) {
+            msgEl.classList.remove("tts-loading");
+            msgEl.classList.add("tts-speaking");
+        }
+
+        ttsAudio.play();
+        ttsAudio.onended = function () {
+            URL.revokeObjectURL(url);
+            if (msgEl) msgEl.classList.remove("tts-speaking");
+            ttsSpeakingEl = null;
+        };
+        ttsAudio.onerror = function () {
+            if (msgEl) msgEl.classList.remove("tts-loading", "tts-speaking");
+            ttsSpeakingEl = null;
+        };
+    } catch (e) {
+        if (msgEl) msgEl.classList.remove("tts-loading", "tts-speaking");
+        ttsSpeakingEl = null;
+    }
+}
+
 function escapeHtml(text) {
     const el = document.createElement("span");
     el.textContent = text;
@@ -186,6 +257,47 @@ function highlightPython(code) {
     return tokens.join('');
 }
 
+// --- Clickable coding terms ---
+// Only terms that are unambiguously coding concepts — no common English words
+var codingTerms = [
+    "function", "variable", "variables", "for loop", "while loop",
+    "conditional", "conditionals", "if statement",
+    "parameter", "parameters",
+    "event handler", "event-driven",
+    "string", "integer", "boolean", "booleans",
+    "array", "arrays",
+    "operator", "operators",
+    "concatenation", "concatenate",
+    "return value",
+    "indentation",
+    "syntax", "expression",
+    "iteration", "iterate", "increment",
+    "namespace", "method",
+    "coordinates",
+    "constant", "constants",
+    "algorithm", "debug", "debugging",
+];
+
+// Sort by length descending so longer phrases match first
+codingTerms.sort(function (a, b) { return b.length - a.length; });
+
+// Build a regex that matches whole words/phrases, case-insensitive
+var codingTermsPattern = new RegExp(
+    '\\b(' + codingTerms.map(function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')\\b',
+    'gi'
+);
+
+function highlightCodingTerms(html) {
+    // Don't replace inside HTML tags or code blocks
+    // Split by tags, only process text nodes
+    return html.replace(/(>)([^<]+)(<)/g, function (match, open, text, close) {
+        var replaced = text.replace(codingTermsPattern, function (word) {
+            return '<span class="coding-term" data-term="' + word.toLowerCase() + '">' + word + '</span>';
+        });
+        return open + replaced + close;
+    });
+}
+
 function formatChatContent(text) {
     // Escape HTML first
     let html = escapeHtml(text);
@@ -209,6 +321,23 @@ function formatChatContent(text) {
         return '<pre class="chat-code-block"><code>' + code.replace(/<br>/g, '\n') + '</code></pre>';
     });
 
+    // Extract code blocks, apply coding term highlighting to the rest, then put code blocks back
+    var codeBlocks = [];
+    html = html.replace(/<pre class="chat-code-block">[\s\S]*?<\/pre>/g, function (match) {
+        codeBlocks.push(match);
+        return '%%CODEBLOCK' + (codeBlocks.length - 1) + '%%';
+    });
+
+    // Highlight coding terms in text (not inside code blocks)
+    html = html.replace(codingTermsPattern, function (word) {
+        return '<span class="coding-term" data-term="' + word.toLowerCase() + '">' + word + '</span>';
+    });
+
+    // Restore code blocks
+    html = html.replace(/%%CODEBLOCK(\d+)%%/g, function (match, idx) {
+        return codeBlocks[parseInt(idx)];
+    });
+
     return html;
 }
 
@@ -217,6 +346,7 @@ function addChatMessage(role, content) {
     div.className = `chat-msg ${role}`;
     if (role === "assistant") {
         div.innerHTML = formatChatContent(content);
+        speakText(content, div);
     } else {
         div.textContent = content;
     }
@@ -375,6 +505,18 @@ async function startTutor() {
     chatHistory.push({ role: "user", content: "Hello, I want to learn MakeCode Python for Minecraft Education. Please introduce yourself and ask me what I want to build." });
     await sendTutorMessage(null);
 }
+
+// Clickable coding terms — ask the tutor to explain
+chatMessages.addEventListener("click", function (e) {
+    var term = e.target.closest(".coding-term");
+    if (!term) return;
+    var word = term.getAttribute("data-term");
+    if (!word) return;
+
+    var question = 'Can you explain what "' + word + '" means in simple terms?';
+    chatInput.value = question;
+    sendMessage();
+});
 
 btnSend.addEventListener("click", sendMessage);
 chatInput.addEventListener("keydown", (e) => {
@@ -719,8 +861,50 @@ document.getElementById("btn-settings").addEventListener("click", () => {
     // Reset validation display
     document.getElementById("validation-result").classList.add("hidden");
 
+    // Tutor settings
+    var ageSlider = document.getElementById("set-learner-age");
+    ageSlider.value = settings.learner_age || 10;
+    updateAgeDisplay(ageSlider.value);
+    var verbSlider = document.getElementById("set-verbosity");
+    verbSlider.value = settings.verbosity || 2;
+    updateVerbosityDisplay(verbSlider.value);
+    document.getElementById("set-tts").checked = ttsEnabled;
+    document.getElementById("font-size-display").textContent = chatFontSize + "px";
+
     showProviderFields(setProvider.value);
     settingsModal.classList.remove("hidden");
+});
+
+// Age slider
+function updateAgeDisplay(val) {
+    var display = document.getElementById("age-display");
+    display.textContent = parseInt(val) >= 17 ? "16+" : val;
+}
+document.getElementById("set-learner-age").addEventListener("input", function () {
+    updateAgeDisplay(this.value);
+});
+
+// Verbosity slider
+var verbosityLabels = { 1: "Brief", 2: "Normal", 3: "Detailed" };
+function updateVerbosityDisplay(val) {
+    document.getElementById("verbosity-display").textContent = verbosityLabels[parseInt(val)] || "Normal";
+}
+document.getElementById("set-verbosity").addEventListener("input", function () {
+    updateVerbosityDisplay(this.value);
+});
+
+// Font size buttons
+document.getElementById("btn-font-decrease").addEventListener("click", function () {
+    if (chatFontSize > 10) {
+        chatFontSize -= 2;
+        document.getElementById("font-size-display").textContent = chatFontSize + "px";
+    }
+});
+document.getElementById("btn-font-increase").addEventListener("click", function () {
+    if (chatFontSize < 24) {
+        chatFontSize += 2;
+        document.getElementById("font-size-display").textContent = chatFontSize + "px";
+    }
 });
 
 // Test Connection button
@@ -742,8 +926,16 @@ document.getElementById("btn-save-settings").addEventListener("click", async () 
 
     const valid = await validateConnection(payload);
 
+    // Save tutor preferences to localStorage regardless of API validation
+    ttsEnabled = document.getElementById("set-tts").checked;
+    localStorage.setItem("snippet_tts", ttsEnabled);
+    localStorage.setItem("snippet_font_size", chatFontSize);
+    applyChatFontSize();
+
     if (valid) {
         // Save the settings
+        var ageVal = parseInt(document.getElementById("set-learner-age").value) || 10;
+        var verbVal = parseInt(document.getElementById("set-verbosity").value) || 2;
         const settingsPayload = {
             anthropic_api_key: payload.anthropic_api_key,
             openai_api_key: payload.openai_api_key,
@@ -753,6 +945,8 @@ document.getElementById("btn-save-settings").addEventListener("click", async () 
             azure_api_version: payload.azure_api_version,
             selected_provider: payload.provider,
             selected_model: payload.selected_model,
+            learner_age: ageVal,
+            verbosity: verbVal,
         };
 
         await fetch("/api/settings", {

@@ -241,6 +241,92 @@ html, body {
     font-size: 13px;
 }
 
+/* TTS indicators */
+.chat-msg.tts-loading {
+    position: relative;
+    border-color: var(--ms-yellow);
+    animation: tts-pulse 1.2s ease-in-out infinite;
+}
+
+.chat-msg.tts-loading::after {
+    content: "Generating speech...";
+    display: block;
+    font-size: 11px;
+    color: var(--ms-yellow);
+    margin-top: 6px;
+    animation: tts-dots 1.5s steps(3, end) infinite;
+}
+
+.chat-msg.tts-speaking {
+    position: relative;
+    border-color: var(--ms-blue);
+}
+
+.chat-msg.tts-speaking::after {
+    content: "";
+    display: inline-flex;
+    gap: 3px;
+    margin-top: 8px;
+    height: 16px;
+    align-items: flex-end;
+}
+
+.chat-msg.tts-speaking::after {
+    content: "Playing...";
+    display: block;
+    font-size: 11px;
+    color: var(--ms-blue);
+}
+
+.chat-msg.tts-speaking::before {
+    content: "";
+    position: absolute;
+    bottom: 6px;
+    right: 10px;
+    width: 24px;
+    height: 16px;
+    background:
+        linear-gradient(var(--ms-blue), var(--ms-blue)) 0px 0/3px 100% no-repeat,
+        linear-gradient(var(--ms-blue), var(--ms-blue)) 5px 0/3px 100% no-repeat,
+        linear-gradient(var(--ms-blue), var(--ms-blue)) 10px 0/3px 100% no-repeat,
+        linear-gradient(var(--ms-blue), var(--ms-blue)) 15px 0/3px 100% no-repeat,
+        linear-gradient(var(--ms-blue), var(--ms-blue)) 20px 0/3px 100% no-repeat;
+    animation: tts-bars 0.8s ease-in-out infinite alternate;
+    border-radius: 2px;
+    opacity: 0.8;
+}
+
+@keyframes tts-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(210, 153, 34, 0.3); }
+    50% { box-shadow: 0 0 0 4px rgba(210, 153, 34, 0.1); }
+}
+
+@keyframes tts-bars {
+    0%   { height: 6px; }
+    25%  { height: 14px; }
+    50%  { height: 8px; }
+    75%  { height: 16px; }
+    100% { height: 10px; }
+}
+
+/* Clickable coding terms */
+.coding-term {
+    color: #569CD6;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
+.coding-term:hover {
+    color: white;
+    background: var(--ms-blue);
+    text-decoration: none;
+}
+
 /* Code in chat messages — VS Code dark theme */
 .chat-code-block {
     background: #1A1A1A;
@@ -308,17 +394,17 @@ html, body {
 }
 
 .send-btn {
+    align-self: flex-end;
     background: var(--ms-blue);
     color: white;
     border: none;
-    padding: 8px 20px;
+    padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
     font-family: inherit;
     font-weight: 600;
     transition: background 0.15s;
-    align-self: flex-end;
 }
 
 .send-btn:hover {
@@ -518,6 +604,133 @@ html, body {
     background: rgba(210, 153, 34, 0.1);
     color: var(--ms-yellow);
     border: 1px solid rgba(210, 153, 34, 0.3);
+}
+
+/* Settings — tutor section */
+.settings-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0 16px;
+}
+
+.settings-section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ms-blue);
+    margin-bottom: 8px;
+}
+
+.age-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.age-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    outline: none;
+}
+
+.age-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--ms-blue);
+    cursor: pointer;
+    border: 2px solid var(--bg-surface);
+    box-shadow: 0 0 4px rgba(0, 120, 212, 0.4);
+}
+
+.age-display {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ms-blue);
+    min-width: 30px;
+    text-align: center;
+}
+
+.age-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
+.font-size-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.font-size-display {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 40px;
+    text-align: center;
+}
+
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding: 8px 0;
+}
+
+.toggle-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--border-light);
+    border-radius: 24px;
+    transition: background 0.2s;
+}
+
+.toggle-slider::before {
+    content: "";
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: var(--text-primary);
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: var(--ms-blue);
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(20px);
 }
 
 /* File browser modal */

@@ -1,9 +1,10 @@
 import json
 import os
+import tempfile
 from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -38,6 +39,8 @@ class Settings(BaseModel):
     azure_api_version: str = "2024-02-01"
     selected_provider: str = "anthropic"
     selected_model: str = "claude-sonnet-4-20250514"
+    learner_age: int = 10
+    verbosity: int = 2
 
 
 # --- Settings ---
@@ -154,7 +157,42 @@ if BLOCKS_REF_PATH.exists():
             _sections.append(f"### {label}\n{', '.join(constants)}")
     BLOCKS_REF = "\n\n".join(_sections)
 
-SYSTEM_PROMPT = """You are a Socratic tutor teaching MakeCode Python for Minecraft Education to students.
+def get_system_prompt(learner_age: int = 10, verbosity: int = 2) -> str:
+    if learner_age <= 9:
+        age_instructions = """## LANGUAGE LEVEL (Age 8-9)
+- Use very simple, short sentences. Imagine you are talking to a young child.
+- Avoid technical jargon — use everyday words. Say "a set of instructions" instead of "function definition".
+- Use fun comparisons: "Think of a variable like a backpack — it holds something for you!"
+- Be very encouraging and enthusiastic. Use "Awesome!", "Great job!", "You're doing amazing!"
+- Keep explanations to 1-2 sentences max before asking a question.
+- Use concrete Minecraft examples the child can picture ("Imagine your character placing a block...")."""
+    elif learner_age <= 11:
+        age_instructions = """## LANGUAGE LEVEL (Age 10-11)
+- Use clear, simple language but you can introduce basic coding terms with brief explanations.
+- When you use a new term, explain it simply: "A function is a set of instructions we give a name to, so we can use them again."
+- Be encouraging and positive. Celebrate correct answers.
+- Keep explanations to 2-3 sentences before asking a question.
+- Use Minecraft context to make concepts relatable."""
+    elif learner_age <= 13:
+        age_instructions = """## LANGUAGE LEVEL (Age 12-13)
+- You can use standard coding terminology but still explain new concepts clearly.
+- Encourage the student to think through problems before giving hints.
+- Be positive but you can be a bit more challenging — "Can you think about why that might not work?"
+- Explanations can be 2-4 sentences. You can introduce slightly more complex ideas."""
+    elif learner_age <= 15:
+        age_instructions = """## LANGUAGE LEVEL (Age 14-15)
+- Use proper programming terminology freely. The student is expected to learn the correct terms.
+- Be encouraging but treat them more maturely. Challenge them to debug and reason through problems.
+- You can ask them to predict what code will do before running it.
+- Explanations can be more detailed when introducing complex concepts like nested loops or conditionals."""
+    else:
+        age_instructions = """## LANGUAGE LEVEL (Age 16+)
+- Use full programming terminology and concepts. Communicate as you would with a capable student.
+- Encourage independent thinking and problem-solving. Ask them to explain their reasoning.
+- You can discuss efficiency, code structure, and best practices.
+- Be direct and respectful. Less hand-holding, more guided discovery."""
+
+    return """You are a Socratic tutor teaching MakeCode Python for Minecraft Education to students.
 
 ## YOUR ROLE
 You guide students to build understanding of Python coding concepts through the MakeCode Python environment. You do NOT just give answers — you teach through questions, hints, and progressive revelation.
@@ -219,7 +257,13 @@ Turn 2 (student says "I want to build a house"):
 Turn 3 (student says "build"):
 {"message": "Perfect! 'build' is a great command name. I've started our code with the basic structure — a function called on_chat_build that will run when you type 'build' in Minecraft chat. Right now it just says 'Starting house!' so we can test it works. Can you see the two parts? The function definition (def) at the top, and the player.on_chat() line that connects the 'build' command to our function. What do you think player.say() does?", "code": "# House Builder\\n# This function runs when we type 'build' in chat\\ndef on_chat_build():\\n    # Tell the player what's happening\\n    player.say(\\"Starting house!\\")\\n\\n# Connect the 'build' chat command to our function\\nplayer.on_chat(\\"build\\", on_chat_build)"}
 
-Remember: ONLY output valid JSON. No markdown, no extra text."""
+Remember: ONLY output valid JSON. No markdown, no extra text.
+
+""" + age_instructions + "\n\n" + (
+        "## RESPONSE LENGTH: BRIEF\nKeep your messages very short — 1-2 sentences max per response. Get straight to the point. Ask one short question." if verbosity == 1
+        else "## RESPONSE LENGTH: DETAILED\nGive thorough explanations with 4-6 sentences. Provide extra context, examples, and tips. Still ask a question at the end." if verbosity == 3
+        else "## RESPONSE LENGTH: NORMAL\nUse 2-3 sentences per response. Explain the concept, then ask a question."
+    )
 
 
 # --- Chat ---
@@ -247,7 +291,9 @@ async def _chat_anthropic(messages: list[dict], settings: dict):
 
     client = anthropic.Anthropic(api_key=api_key)
 
-    system_msg = SYSTEM_PROMPT
+    learner_age = settings.get("learner_age", 10)
+    verbosity = settings.get("verbosity", 2)
+    system_msg = get_system_prompt(learner_age, verbosity)
     chat_messages = []
     for m in messages:
         if m["role"] == "system":
@@ -273,7 +319,9 @@ async def _chat_openai(messages: list[dict], settings: dict):
 
     client = OpenAI(api_key=api_key)
     # Inject system prompt as first message
-    full_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    learner_age = settings.get("learner_age", 10)
+    verbosity = settings.get("verbosity", 2)
+    full_messages = [{"role": "system", "content": get_system_prompt(learner_age, verbosity)}]
     for m in messages:
         if m["role"] != "system":
             full_messages.append(m)
@@ -298,7 +346,9 @@ async def _chat_azure(messages: list[dict], settings: dict):
         api_version=settings.get("azure_api_version", "2024-02-01"),
         azure_endpoint=endpoint,
     )
-    full_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    learner_age = settings.get("learner_age", 10)
+    verbosity = settings.get("verbosity", 2)
+    full_messages = [{"role": "system", "content": get_system_prompt(learner_age, verbosity)}]
     for m in messages:
         if m["role"] != "system":
             full_messages.append(m)
@@ -380,6 +430,38 @@ def delete_file(req: BrowseRequest):
     if target.exists() and target.is_file():
         target.unlink()
     return {"status": "ok"}
+
+
+# --- Text-to-Speech (Edge-TTS) ---
+
+class TTSRequest(BaseModel):
+    text: str
+    voice: str = "en-GB-SoniaNeural"
+
+
+@app.post("/api/tts")
+async def text_to_speech(req: TTSRequest):
+    import edge_tts
+    import re
+
+    # Clean text for speech
+    text = req.text
+    text = re.sub(r'```[\s\S]*?```', '. Here is a code example. ', text)
+    text = re.sub(r'`([^`]+)`', r'\1', text)
+    text = re.sub(r'\*\*([^*]+)\*\*', r'\1', text)
+    text = re.sub(r'\n+', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+
+    if not text:
+        raise HTTPException(400, "No text to speak")
+
+    communicate = edge_tts.Communicate(text, req.voice)
+    audio_data = b""
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            audio_data += chunk["data"]
+
+    return Response(content=audio_data, media_type="audio/mpeg")
 
 
 # --- Static files ---
