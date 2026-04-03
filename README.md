@@ -144,7 +144,3 @@ These files can be updated to reflect changes in the MakeCode Python environment
 ## License
 
 This project is provided as open source under the MIT License. See the terms in `static/terms.html` for the full disclaimer.
-
----
-
-Built with [Claude Code](https://claude.ai/claude-code)
