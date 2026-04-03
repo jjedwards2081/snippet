@@ -132,10 +132,6 @@ az login
 az webapp up --resource-group snippet-rg --name snippet-app --runtime "PYTHON:3.11"
 ```
 
-## Editing Terms of Use
-
-The terms displayed on first launch and in the About page are loaded from `static/terms.html`. Edit this file directly to update the legal text.
-
 ## MakeCode Python Reference
 
 The tutor enforces the MakeCode Python dialect as defined in two reference files:
