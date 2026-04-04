@@ -466,6 +466,7 @@ async def text_to_speech(req: TTSRequest):
 
 # --- Static files ---
 
+app.mount("/images", StaticFiles(directory="images"), name="images")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
