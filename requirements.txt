@@ -1,5 +1,5 @@
 fastapi==0.115.0
 uvicorn==0.30.6
 anthropic>=0.88.0
-openai==1.51.0
+openai>=2.0.0
 edge-tts>=7.0.0

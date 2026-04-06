@@ -502,7 +502,7 @@ async function startTutor() {
     }
 
     // Send initial greeting request
-    chatHistory.push({ role: "user", content: "Hello, I want to learn MakeCode Python for Minecraft Education. Please introduce yourself and ask me what I want to build." });
+    chatHistory.push({ role: "user", content: "Hello, I'm a new student. Please introduce yourself briefly and ask me whether I want to: (1) learn to code something new in Minecraft, or (2) get help with code I've already written. Present these as two clear options." });
     await sendTutorMessage(null);
 }
 
@@ -763,8 +763,36 @@ function getFormPayload() {
     };
 }
 
+function preValidateKey(payload) {
+    var p = payload.provider;
+    if (p === "anthropic") {
+        var k = payload.anthropic_api_key;
+        if (!k) return "Please enter your Anthropic API key.";
+        if (!k.startsWith("sk-ant-")) return "That doesn't look like an Anthropic API key. It should start with 'sk-ant-'. Make sure you're pasting only the key, not other text.";
+    } else if (p === "openai") {
+        var k = payload.openai_api_key;
+        if (!k) return "Please enter your OpenAI API key.";
+        if (!k.startsWith("sk-")) return "That doesn't look like an OpenAI API key. It should start with 'sk-'. Make sure you're pasting only the key, not other text.";
+    } else if (p === "azure") {
+        if (!payload.azure_api_key) return "Please enter your Azure API key.";
+        if (!payload.azure_endpoint) return "Please enter your Azure endpoint URL.";
+        if (payload.azure_api_key.length < 20) return "That Azure API key looks too short. Please check and try again.";
+    }
+    return null;
+}
+
 async function validateConnection(payload) {
     const validationResult = document.getElementById("validation-result");
+
+    // Check key format before hitting the server
+    var preError = preValidateKey(payload);
+    if (preError) {
+        setConnectionStatus("error", "Invalid key");
+        validationResult.className = "validation-result failure";
+        validationResult.textContent = preError;
+        validationResult.classList.remove("hidden");
+        return false;
+    }
 
     setConnectionStatus("validating", "Testing...");
     validationResult.className = "validation-result testing";
