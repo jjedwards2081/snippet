@@ -89,6 +89,7 @@ function showWelcomeMessage() {
 async function proceedAfterTerms() {
     const res = await fetch("/api/settings");
     settings = await res.json();
+    trackVisit();
     await checkExistingConnection();
     if (!aiConnected) {
         showWelcomeMessage();
@@ -103,6 +104,16 @@ async function loadSettings() {
     await proceedAfterTerms();
 }
 loadSettings();
+
+// --- Track visit (sends provider once settings are loaded) ---
+async function trackVisit() {
+    var provider = settings.selected_provider || "";
+    fetch("/api/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider: provider }),
+    }).catch(function () {});
+}
 
 // --- Chat ---
 const chatMessages = document.getElementById("chat-messages");

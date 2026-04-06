@@ -5,3 +5,4 @@ settings.json
 .DS_Store
 server.log
 scripts/
+analytics.db
