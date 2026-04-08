@@ -335,6 +335,48 @@ function playTTSAudio(audioData, msgEl) {
     };
 }
 
+// --- Ollama direct browser calls ---
+async function chatViaOllama(messages) {
+    // Get system prompt from server (has full MakeCode reference)
+    var promptRes = await fetch("/api/system-prompt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            learner_age: settings.learner_age || 10,
+            verbosity: settings.verbosity || 1,
+        }),
+    });
+    var promptData = await promptRes.json();
+
+    var fullMessages = [{ role: "system", content: promptData.prompt }];
+    for (var i = 0; i < messages.length; i++) {
+        if (messages[i].role !== "system") {
+            fullMessages.push(messages[i]);
+        }
+    }
+
+    var ollamaUrl = (settings.ollama_url || "http://localhost:11434").replace(/\/$/, "");
+    var ollamaModel = settings.ollama_model || settings.selected_model || "llama3";
+
+    var res = await fetch(ollamaUrl + "/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            model: ollamaModel,
+            messages: fullMessages,
+            stream: false,
+        }),
+    });
+
+    if (!res.ok) {
+        var errText = await res.text();
+        throw new Error("Ollama error: " + errText);
+    }
+
+    var data = await res.json();
+    return data.message.content;
+}
+
 function escapeHtml(text) {
     const el = document.createElement("span");
     el.textContent = text;
@@ -604,35 +646,43 @@ async function sendTutorMessage(userText) {
             }
         }
 
-        const res = await fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                messages: contextMessages,
-                provider: settings.selected_provider || "anthropic",
-                settings: settings,
-            }),
-        });
-
-        if (!res.ok) {
-            removeTypingIndicator();
-            const err = await res.json();
-            addChatMessage("error", `Error: ${err.detail || "Something went wrong"}`);
+        var reply;
+        if (settings.selected_provider === "ollama") {
+            // Call Ollama directly from the browser
+            reply = await chatViaOllama(contextMessages);
         } else {
-            const data = await res.json();
-            const displayMsg = handleAIResponse(data.reply);
-            chatHistory.push({ role: "assistant", content: data.reply });
-
-            if (ttsEnabled && settings.selected_provider !== "ollama") {
-                // Keep typing indicator while TTS generates audio
-                var audioData = await fetchTTSAudio(displayMsg);
+            var res = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    messages: contextMessages,
+                    provider: settings.selected_provider || "anthropic",
+                    settings: settings,
+                }),
+            });
+            if (!res.ok) {
                 removeTypingIndicator();
-                var msgDiv = addChatMessage("assistant", displayMsg);
-                playTTSAudio(audioData, msgDiv);
-            } else {
-                removeTypingIndicator();
-                addChatMessage("assistant", displayMsg);
+                var err = await res.json();
+                addChatMessage("error", "Error: " + (err.detail || "Something went wrong"));
+                btnSend.disabled = false;
+                chatInput.focus();
+                return;
             }
+            var data = await res.json();
+            reply = data.reply;
+        }
+
+        var displayMsg = handleAIResponse(reply);
+        chatHistory.push({ role: "assistant", content: reply });
+
+        if (ttsEnabled && settings.selected_provider !== "ollama") {
+            var audioData = await fetchTTSAudio(displayMsg);
+            removeTypingIndicator();
+            var msgDiv = addChatMessage("assistant", displayMsg);
+            playTTSAudio(audioData, msgDiv);
+        } else {
+            removeTypingIndicator();
+            addChatMessage("assistant", displayMsg);
         }
     } catch (e) {
         removeTypingIndicator();
@@ -988,7 +1038,8 @@ function preValidateKey(payload) {
         if (!payload.azure_endpoint) return "Please enter your Azure endpoint URL.";
         if (payload.azure_api_key.length < 20) return "That Azure API key looks too short. Please check and try again.";
     } else if (p === "ollama") {
-        // No key needed — validation checks if Ollama is running
+        // No key needed — but skip server-side validation, we validate directly
+        return null;
     }
     return null;
 }
@@ -1012,6 +1063,32 @@ async function validateConnection(payload) {
     validationResult.classList.remove("hidden");
 
     try {
+        // Ollama: validate directly from browser
+        if (payload.provider === "ollama") {
+            try {
+                var ollamaRes = await fetch("http://localhost:11434/api/tags", { signal: AbortSignal.timeout(5000) });
+                var ollamaData = await ollamaRes.json();
+                var models = (ollamaData.models || []).map(function (m) { return m.name; });
+                if (models.length > 0) {
+                    setConnectionStatus("connected", "Connected to Ollama (Local)");
+                    aiConnected = true;
+                    validationResult.className = "validation-result success";
+                    validationResult.textContent = "Ollama is running with " + models.length + " model(s) available.";
+                    return true;
+                } else {
+                    setConnectionStatus("error", "No models");
+                    validationResult.className = "validation-result failure";
+                    validationResult.textContent = "Ollama is running but no models installed. Run: ollama pull llama3";
+                    return false;
+                }
+            } catch (e) {
+                setConnectionStatus("error", "Ollama not found");
+                validationResult.className = "validation-result failure";
+                validationResult.textContent = "Cannot connect to Ollama on your device. Is it running? Start with: ollama serve";
+                return false;
+            }
+        }
+
         const res = await fetch("/api/validate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1081,28 +1158,28 @@ setProvider.addEventListener("change", () => {
 async function detectOllamaModels() {
     var statusEl = document.getElementById("ollama-status");
     var selectEl = document.getElementById("set-ollama-model");
-    statusEl.textContent = "Checking Ollama...";
+    statusEl.textContent = "Checking Ollama on your device...";
     try {
-        var res = await fetch("/api/ollama/status");
+        // Call Ollama directly on the user's local machine
+        var res = await fetch("http://localhost:11434/api/tags", { signal: AbortSignal.timeout(5000) });
         var data = await res.json();
-        if (data.available && data.models.length > 0) {
-            statusEl.textContent = "Ollama is running (" + data.models.length + " model" + (data.models.length > 1 ? "s" : "") + " available)";
+        var models = (data.models || []).map(function (m) { return m.name; });
+        if (models.length > 0) {
+            statusEl.textContent = "Ollama is running on your device (" + models.length + " model" + (models.length > 1 ? "s" : "") + " available)";
             selectEl.innerHTML = "";
             var savedModel = settings.ollama_model || "";
-            data.models.forEach(function (m) {
+            models.forEach(function (m) {
                 var opt = document.createElement("option");
                 opt.value = m;
                 opt.textContent = m;
                 if (m === savedModel) opt.selected = true;
                 selectEl.appendChild(opt);
             });
-        } else if (data.available) {
-            statusEl.textContent = "Ollama is running but no models installed. Run: ollama pull llama3";
         } else {
-            statusEl.textContent = "Ollama not detected. Install from ollama.com and run: ollama serve";
+            statusEl.textContent = "Ollama is running but no models installed. Run: ollama pull llama3";
         }
     } catch (e) {
-        statusEl.textContent = "Could not check Ollama status.";
+        statusEl.textContent = "Ollama not detected on your device. Install from ollama.com and run: ollama serve";
     }
 }
 

@@ -528,6 +528,17 @@ async def ollama_status():
 
 # --- File System Browsing ---
 
+class SystemPromptRequest(BaseModel):
+    learner_age: int = 10
+    verbosity: int = 1
+
+
+@app.post("/api/system-prompt")
+def get_system_prompt_endpoint(req: SystemPromptRequest):
+    """Return the system prompt for client-side Ollama calls."""
+    return {"prompt": get_system_prompt(req.learner_age, req.verbosity)}
+
+
 def _safe_path(path_str: str) -> Path:
     """Resolve a path, defaulting to Documents."""
     if not path_str:
