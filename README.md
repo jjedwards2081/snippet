@@ -21,8 +21,7 @@ A Socratic tutoring web app that teaches students MakeCode Python for Minecraft 
 - **API Key Validation** — tests your API key before saving, with a green/red connection indicator
 - **Dark Mode UI** — full dark theme inspired by VS Code
 - **Content Safety** — the tutor stays in character, redirects inappropriate requests, and enforces classroom-appropriate content
-- **Reporting Dashboard** — DAU/WAU/MAU metrics, world map, and provider usage at `/reporting`
-
+  
 ## Getting Started
 
 A fully operational version of the latest code in this repo is available at https://snippet-app.azurewebsites.net/
@@ -175,6 +174,4 @@ These files can be updated to reflect changes in the MakeCode Python environment
 
 This project is provided as open source under the MIT License. See the terms in `static/terms.html` for the full disclaimer.
 
----
 
-Built with [Claude Code](https://claude.ai/claude-code)
