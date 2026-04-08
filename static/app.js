@@ -163,61 +163,50 @@ applyChatFontSize();
 var ttsAudio = null;
 var ttsSpeakingEl = null;
 
-async function speakText(text, msgEl) {
-    if (!ttsEnabled) return;
-    if (!text) return;
-
-    // Stop any current playback and clear previous indicator
-    if (ttsAudio) {
-        ttsAudio.pause();
-        ttsAudio.currentTime = 0;
-    }
-    if (ttsSpeakingEl) {
-        ttsSpeakingEl.classList.remove("tts-loading", "tts-speaking");
-    }
-
-    // Show loading indicator on the message
-    if (msgEl) {
-        msgEl.classList.add("tts-loading");
-        ttsSpeakingEl = msgEl;
-    }
-
+// Fetch TTS audio from server, returns { blob, url } or null
+async function fetchTTSAudio(text) {
     try {
         var res = await fetch("/api/tts", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text: text }),
         });
-
-        if (!res.ok) {
-            if (msgEl) msgEl.classList.remove("tts-loading");
-            return;
-        }
-
+        if (!res.ok) return null;
         var blob = await res.blob();
         var url = URL.createObjectURL(blob);
-        ttsAudio = new Audio(url);
-
-        // Switch from loading to speaking animation
-        if (msgEl) {
-            msgEl.classList.remove("tts-loading");
-            msgEl.classList.add("tts-speaking");
-        }
-
-        ttsAudio.play();
-        ttsAudio.onended = function () {
-            URL.revokeObjectURL(url);
-            if (msgEl) msgEl.classList.remove("tts-speaking");
-            ttsSpeakingEl = null;
-        };
-        ttsAudio.onerror = function () {
-            if (msgEl) msgEl.classList.remove("tts-loading", "tts-speaking");
-            ttsSpeakingEl = null;
-        };
+        return { blob: blob, url: url };
     } catch (e) {
-        if (msgEl) msgEl.classList.remove("tts-loading", "tts-speaking");
-        ttsSpeakingEl = null;
+        return null;
     }
+}
+
+function playTTSAudio(audioData, msgEl) {
+    if (!audioData) return;
+
+    // Stop any current playback
+    if (ttsAudio) {
+        ttsAudio.pause();
+        ttsAudio.currentTime = 0;
+    }
+    if (ttsSpeakingEl) {
+        ttsSpeakingEl.classList.remove("tts-speaking");
+    }
+
+    ttsAudio = new Audio(audioData.url);
+    ttsSpeakingEl = msgEl;
+
+    if (msgEl) msgEl.classList.add("tts-speaking");
+
+    ttsAudio.play();
+    ttsAudio.onended = function () {
+        URL.revokeObjectURL(audioData.url);
+        if (msgEl) msgEl.classList.remove("tts-speaking");
+        ttsSpeakingEl = null;
+    };
+    ttsAudio.onerror = function () {
+        if (msgEl) msgEl.classList.remove("tts-speaking");
+        ttsSpeakingEl = null;
+    };
 }
 
 function escapeHtml(text) {
@@ -390,12 +379,12 @@ function addChatMessage(role, content) {
     div.className = `chat-msg ${role}`;
     if (role === "assistant") {
         div.innerHTML = formatChatContent(content);
-        speakText(content, div);
     } else {
         div.textContent = content;
     }
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+    return div;
 }
 
 function addTypingIndicator() {
@@ -487,16 +476,25 @@ async function sendTutorMessage(userText) {
             }),
         });
 
-        removeTypingIndicator();
-
         if (!res.ok) {
+            removeTypingIndicator();
             const err = await res.json();
             addChatMessage("error", `Error: ${err.detail || "Something went wrong"}`);
         } else {
             const data = await res.json();
             const displayMsg = handleAIResponse(data.reply);
             chatHistory.push({ role: "assistant", content: data.reply });
-            addChatMessage("assistant", displayMsg);
+
+            if (ttsEnabled) {
+                // Keep typing indicator while TTS generates audio
+                var audioData = await fetchTTSAudio(displayMsg);
+                removeTypingIndicator();
+                var msgDiv = addChatMessage("assistant", displayMsg);
+                playTTSAudio(audioData, msgDiv);
+            } else {
+                removeTypingIndicator();
+                addChatMessage("assistant", displayMsg);
+            }
         }
     } catch (e) {
         removeTypingIndicator();
@@ -928,7 +926,7 @@ document.getElementById("btn-settings").addEventListener("click", () => {
     ageSlider.value = settings.learner_age || 10;
     updateAgeDisplay(ageSlider.value);
     var verbSlider = document.getElementById("set-verbosity");
-    verbSlider.value = settings.verbosity || 2;
+    verbSlider.value = settings.verbosity || 1;
     updateVerbosityDisplay(verbSlider.value);
     document.getElementById("set-tts").checked = ttsEnabled;
     document.getElementById("font-size-display").textContent = chatFontSize + "px";
@@ -997,7 +995,7 @@ document.getElementById("btn-save-settings").addEventListener("click", async () 
     if (valid) {
         // Save settings encrypted in localStorage
         var ageVal = parseInt(document.getElementById("set-learner-age").value) || 10;
-        var verbVal = parseInt(document.getElementById("set-verbosity").value) || 2;
+        var verbVal = parseInt(document.getElementById("set-verbosity").value) || 1;
         const settingsPayload = {
             anthropic_api_key: payload.anthropic_api_key,
             openai_api_key: payload.openai_api_key,

@@ -102,7 +102,7 @@ class Settings(BaseModel):
     selected_provider: str = "anthropic"
     selected_model: str = "claude-sonnet-4-20250514"
     learner_age: int = 10
-    verbosity: int = 2
+    verbosity: int = 1
 
 
 # --- Settings ---
@@ -222,7 +222,7 @@ if BLOCKS_REF_PATH.exists():
             _sections.append(f"### {label}\n{', '.join(constants)}")
     BLOCKS_REF = "\n\n".join(_sections)
 
-def get_system_prompt(learner_age: int = 10, verbosity: int = 2) -> str:
+def get_system_prompt(learner_age: int = 10, verbosity: int = 1) -> str:
     if learner_age <= 9:
         age_instructions = """## LANGUAGE LEVEL (Age 8-9)
 - Use very simple, short sentences. Imagine you are talking to a young child.
@@ -387,7 +387,7 @@ async def _chat_anthropic(messages: list[dict], settings: dict):
     client = anthropic.Anthropic(api_key=api_key)
 
     learner_age = settings.get("learner_age", 10)
-    verbosity = settings.get("verbosity", 2)
+    verbosity = settings.get("verbosity", 1)
     system_msg = get_system_prompt(learner_age, verbosity)
     chat_messages = []
     for m in messages:
@@ -415,7 +415,7 @@ async def _chat_openai(messages: list[dict], settings: dict):
     client = OpenAI(api_key=api_key)
     # Inject system prompt as first message
     learner_age = settings.get("learner_age", 10)
-    verbosity = settings.get("verbosity", 2)
+    verbosity = settings.get("verbosity", 1)
     full_messages = [{"role": "system", "content": get_system_prompt(learner_age, verbosity)}]
     for m in messages:
         if m["role"] != "system":
@@ -442,7 +442,7 @@ async def _chat_azure(messages: list[dict], settings: dict):
         azure_endpoint=endpoint,
     )
     learner_age = settings.get("learner_age", 10)
-    verbosity = settings.get("verbosity", 2)
+    verbosity = settings.get("verbosity", 1)
     full_messages = [{"role": "system", "content": get_system_prompt(learner_age, verbosity)}]
     for m in messages:
         if m["role"] != "system":
