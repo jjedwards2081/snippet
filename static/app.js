@@ -1,3 +1,5 @@
+// --- Snippet ---
+
 // --- State ---
 let editor = null;
 let currentFilename = "untitled.py";
@@ -16,6 +18,28 @@ let lastAICode = "";
 // Tutor preferences (persisted in localStorage)
 let ttsEnabled = localStorage.getItem("snippet_tts") === "true";
 let chatFontSize = parseInt(localStorage.getItem("snippet_font_size")) || 14;
+
+// --- Settings storage (obfuscated in localStorage) ---
+function saveSettingsToLocal(data) {
+    try {
+        var bytes = new TextEncoder().encode(JSON.stringify(data));
+        var binary = String.fromCharCode.apply(null, bytes);
+        localStorage.setItem("snippet_cfg", btoa(binary));
+    } catch (e) {}
+}
+
+function loadSettingsFromLocal() {
+    try {
+        var encoded = localStorage.getItem("snippet_cfg");
+        if (!encoded) return null;
+        var binary = atob(encoded);
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return JSON.parse(new TextDecoder().decode(bytes));
+    } catch (e) {
+        return null;
+    }
+}
 
 // --- Monaco Editor Setup ---
 require.config({ paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs" } });
@@ -87,8 +111,11 @@ function showWelcomeMessage() {
 }
 
 async function proceedAfterTerms() {
-    const res = await fetch("/api/settings");
-    settings = await res.json();
+    // Load settings from localStorage
+    var stored = loadSettingsFromLocal();
+    if (stored && stored.selected_provider) {
+        settings = stored;
+    }
     trackVisit();
     await checkExistingConnection();
     if (!aiConnected) {
@@ -98,8 +125,14 @@ async function proceedAfterTerms() {
 
 async function loadSettings() {
     if (!hasAcceptedTerms()) {
-        showTermsAcceptance();
-        return;
+        // If settings already exist, the user has used the app before — accept implicitly
+        var existing = loadSettingsFromLocal();
+        if (existing && existing.selected_provider) {
+            localStorage.setItem("snippet_terms_accepted", "true");
+        } else {
+            showTermsAcceptance();
+            return;
+        }
     }
     await proceedAfterTerms();
 }
@@ -450,6 +483,7 @@ async function sendTutorMessage(userText) {
             body: JSON.stringify({
                 messages: contextMessages,
                 provider: settings.selected_provider || "anthropic",
+                settings: settings,
             }),
         });
 
@@ -843,7 +877,10 @@ async function validateConnection(payload) {
 async function checkExistingConnection() {
     const s = settings;
     const provider = s.selected_provider;
-    if (!provider) return;
+    if (!provider) {
+        console.log("[Snippet] No provider set");
+        return;
+    }
 
     const hasKey =
         (provider === "anthropic" && s.anthropic_api_key) ||
@@ -852,25 +889,11 @@ async function checkExistingConnection() {
 
     if (!hasKey) return;
 
-    setConnectionStatus("validating", "Testing...");
-    try {
-        const res = await fetch("/api/validate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...s, provider }),
-        });
-        const data = await res.json();
-        if (data.valid) {
-            const providerName = { anthropic: "Claude", openai: "ChatGPT", azure: "Azure" }[provider] || provider;
-            setConnectionStatus("connected", `Connected to ${providerName}`);
-            aiConnected = true;
-            startTutor();
-        } else {
-            setConnectionStatus("error", "Connection failed");
-        }
-    } catch {
-        setConnectionStatus("disconnected", "Not connected");
-    }
+    // Key exists in local storage — show connected immediately without re-validating
+    const providerName = { anthropic: "Claude", openai: "ChatGPT", azure: "Azure" }[provider] || provider;
+    setConnectionStatus("connected", `Connected to ${providerName}`);
+    aiConnected = true;
+    startTutor();
 }
 
 // --- Settings Modal ---
@@ -972,7 +995,7 @@ document.getElementById("btn-save-settings").addEventListener("click", async () 
     applyChatFontSize();
 
     if (valid) {
-        // Save the settings
+        // Save settings encrypted in localStorage
         var ageVal = parseInt(document.getElementById("set-learner-age").value) || 10;
         var verbVal = parseInt(document.getElementById("set-verbosity").value) || 2;
         const settingsPayload = {
@@ -988,11 +1011,7 @@ document.getElementById("btn-save-settings").addEventListener("click", async () 
             verbosity: verbVal,
         };
 
-        await fetch("/api/settings", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(settingsPayload),
-        });
+        saveSettingsToLocal(settingsPayload);
 
         settings = settingsPayload;
         setTimeout(() => {

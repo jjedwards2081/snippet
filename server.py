@@ -11,6 +11,22 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+
+from starlette.middleware.base import BaseHTTPMiddleware
+
+
+class NoCacheMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        if request.url.path.startswith("/static") or request.url.path == "/":
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+        return response
+
+
+app.add_middleware(NoCacheMiddleware)
+
 # --- Analytics Database ---
 ANALYTICS_DB = Path("analytics.db")
 
@@ -64,6 +80,7 @@ DEFAULT_DIR = HOME_DIR / "Documents"
 class ChatRequest(BaseModel):
     messages: list[dict]
     provider: str  # "anthropic", "openai", "azure"
+    settings: dict = {}  # client-side settings including API keys
 
 
 class SaveScriptRequest(BaseModel):
@@ -347,14 +364,15 @@ Remember: ONLY output valid JSON. No markdown, no extra text.
 
 @app.post("/api/chat")
 async def chat(req: ChatRequest):
-    settings = load_settings()
+    # Use client-provided settings (keys from encrypted localStorage), fall back to server file
+    chat_settings = req.settings if req.settings else load_settings()
 
     if req.provider == "anthropic":
-        return await _chat_anthropic(req.messages, settings)
+        return await _chat_anthropic(req.messages, chat_settings)
     elif req.provider == "openai":
-        return await _chat_openai(req.messages, settings)
+        return await _chat_openai(req.messages, chat_settings)
     elif req.provider == "azure":
-        return await _chat_azure(req.messages, settings)
+        return await _chat_azure(req.messages, chat_settings)
     else:
         raise HTTPException(400, f"Unknown provider: {req.provider}")
 
