@@ -7,6 +7,131 @@ let currentFilePath = null; // full path of loaded file
 let chatHistory = [];
 let settings = {};
 
+// --- Chat session persistence ---
+// Each message stored as { role, content, display } where display is the visible text
+var chatDisplayHistory = [];
+
+function saveChatSession() {
+    try {
+        var session = {
+            chatHistory: chatHistory,
+            displayHistory: chatDisplayHistory,
+            editorCode: editor ? editor.getValue() : "",
+            filename: currentFilename,
+            timestamp: Date.now(),
+        };
+        var bytes = new TextEncoder().encode(JSON.stringify(session));
+        var binary = String.fromCharCode.apply(null, bytes);
+        localStorage.setItem("snippet_session", btoa(binary));
+    } catch (e) {}
+}
+
+function loadChatSession() {
+    try {
+        var encoded = localStorage.getItem("snippet_session");
+        if (!encoded) return null;
+        var binary = atob(encoded);
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return JSON.parse(new TextDecoder().decode(bytes));
+    } catch (e) {
+        return null;
+    }
+}
+
+function clearChatSession() {
+    localStorage.removeItem("snippet_session");
+    chatDisplayHistory = [];
+}
+
+// --- Progress Tracker ---
+var ALL_CONCEPTS = [
+    { id: "variables", label: "Variables", group: "Basics" },
+    { id: "strings", label: "Strings", group: "Basics" },
+    { id: "numbers", label: "Numbers", group: "Basics" },
+    { id: "booleans", label: "Booleans", group: "Basics" },
+    { id: "lists", label: "Lists", group: "Basics" },
+    { id: "comments", label: "Comments", group: "Basics" },
+    { id: "operators", label: "Operators", group: "Logic" },
+    { id: "comparison", label: "Comparison", group: "Logic" },
+    { id: "boolean_logic", label: "Boolean Logic", group: "Logic" },
+    { id: "if_else", label: "If / Else", group: "Control Flow" },
+    { id: "for_loops", label: "For Loops", group: "Control Flow" },
+    { id: "while_loops", label: "While Loops", group: "Control Flow" },
+    { id: "functions", label: "Functions", group: "Functions" },
+    { id: "parameters", label: "Parameters", group: "Functions" },
+    { id: "return_values", label: "Return Values", group: "Functions" },
+    { id: "events", label: "Events", group: "Minecraft" },
+    { id: "chat_commands", label: "Chat Commands", group: "Minecraft" },
+    { id: "player_api", label: "Player API", group: "Minecraft" },
+    { id: "blocks_api", label: "Blocks API", group: "Minecraft" },
+    { id: "mobs_api", label: "Mobs API", group: "Minecraft" },
+    { id: "agent_api", label: "Agent API", group: "Minecraft" },
+    { id: "builder_api", label: "Builder API", group: "Minecraft" },
+    { id: "positions", label: "Positions", group: "Minecraft" },
+    { id: "coordinates", label: "Coordinates", group: "Minecraft" },
+    { id: "debugging", label: "Debugging", group: "Skills" },
+];
+
+var learnedConcepts = {};
+
+function loadProgress() {
+    try {
+        var stored = localStorage.getItem("snippet_progress");
+        if (stored) learnedConcepts = JSON.parse(stored);
+    } catch (e) {}
+}
+
+function saveProgress() {
+    try {
+        localStorage.setItem("snippet_progress", JSON.stringify(learnedConcepts));
+    } catch (e) {}
+}
+
+function markConceptsLearned(conceptIds) {
+    if (!conceptIds || !conceptIds.length) return;
+    var changed = false;
+    for (var i = 0; i < conceptIds.length; i++) {
+        var id = conceptIds[i];
+        if (!learnedConcepts[id]) {
+            learnedConcepts[id] = Date.now();
+            changed = true;
+        }
+    }
+    if (changed) {
+        saveProgress();
+        renderProgress();
+    }
+}
+
+function renderProgress() {
+    var grid = document.getElementById("progress-grid");
+    var countEl = document.getElementById("progress-count");
+    if (!grid) return;
+
+    grid.innerHTML = "";
+    var learned = 0;
+
+    for (var i = 0; i < ALL_CONCEPTS.length; i++) {
+        var concept = ALL_CONCEPTS[i];
+        var badge = document.createElement("span");
+        badge.className = "progress-badge" + (learnedConcepts[concept.id] ? " learned" : "");
+        badge.textContent = concept.label;
+        badge.title = concept.group + ": " + concept.label + (learnedConcepts[concept.id] ? " (learned)" : " (not yet)");
+        grid.appendChild(badge);
+        if (learnedConcepts[concept.id]) learned++;
+    }
+
+    if (countEl) countEl.textContent = learned + "/" + ALL_CONCEPTS.length;
+}
+
+loadProgress();
+
+// Toggle progress panel
+document.getElementById("btn-progress").addEventListener("click", function () {
+    document.getElementById("progress-panel").classList.toggle("hidden");
+});
+
 // File browser state
 let browseCurrentDir = "";
 let browseMode = "load"; // "load" or "save"
@@ -158,6 +283,7 @@ function applyChatFontSize() {
     chatMessages.style.fontSize = chatFontSize + "px";
 }
 applyChatFontSize();
+renderProgress();
 
 // --- Text-to-Speech (Edge-TTS via server) ---
 var ttsAudio = null;
@@ -374,7 +500,7 @@ function formatChatContent(text) {
     return html;
 }
 
-function addChatMessage(role, content) {
+function addChatMessage(role, content, skipSave) {
     const div = document.createElement("div");
     div.className = `chat-msg ${role}`;
     if (role === "assistant") {
@@ -384,6 +510,13 @@ function addChatMessage(role, content) {
     }
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Track and auto-save (skip during session restore to avoid re-saving)
+    if (!skipSave && (role === "user" || role === "assistant")) {
+        chatDisplayHistory.push({ role: role, content: content });
+        saveChatSession();
+    }
+
     return div;
 }
 
@@ -424,6 +557,10 @@ function handleAIResponse(rawReply) {
             message = parsed.message;
             code = parsed.code || null;
         }
+        // Track learned concepts
+        if (parsed.concepts && parsed.concepts.length > 0) {
+            markConceptsLearned(parsed.concepts);
+        }
     } catch {
         // Not JSON — just use the raw text as message
     }
@@ -432,6 +569,7 @@ function handleAIResponse(rawReply) {
     if (code && editor) {
         editor.setValue(code);
         lastAICode = code;
+        saveChatSession();
     }
 
     return message;
@@ -485,7 +623,7 @@ async function sendTutorMessage(userText) {
             const displayMsg = handleAIResponse(data.reply);
             chatHistory.push({ role: "assistant", content: data.reply });
 
-            if (ttsEnabled) {
+            if (ttsEnabled && settings.selected_provider !== "ollama") {
                 // Keep typing indicator while TTS generates audio
                 var audioData = await fetchTTSAudio(displayMsg);
                 removeTypingIndicator();
@@ -539,12 +677,37 @@ async function startTutor() {
     if (tutorStarted) return;
     tutorStarted = true;
 
-    // Set initial editor content
+    // Try to restore a saved session
+    var saved = loadChatSession();
+    if (saved && saved.displayHistory && saved.displayHistory.length > 0) {
+        // Restore chat history for API context
+        chatHistory = saved.chatHistory || [];
+        chatDisplayHistory = saved.displayHistory || [];
+
+        // Restore editor code
+        if (saved.editorCode && editor) {
+            editor.setValue(saved.editorCode);
+            lastAICode = saved.editorCode;
+        }
+        if (saved.filename) {
+            currentFilename = saved.filename;
+            document.getElementById("editor-filename").textContent = currentFilename;
+        }
+
+        // Replay displayed messages (without saving again)
+        chatMessages.innerHTML = "";
+        for (var i = 0; i < chatDisplayHistory.length; i++) {
+            var msg = chatDisplayHistory[i];
+            addChatMessage(msg.role, msg.content, true);
+        }
+        return;
+    }
+
+    // No saved session — start fresh
     if (editor) {
         editor.setValue("# Your MakeCode Python code will appear here\n# as you learn with the tutor!\n");
     }
 
-    // Send initial greeting request
     chatHistory.push({ role: "user", content: "Hello, I'm a new student. Please introduce yourself briefly and ask me whether I want to: (1) learn to code something new in Minecraft, or (2) get help with code I've already written. Present these as two clear options." });
     await sendTutorMessage(null);
 }
@@ -575,11 +738,12 @@ document.getElementById("btn-new").addEventListener("click", () => {
     currentFilename = "untitled.py";
     currentFilePath = null;
     document.getElementById("editor-filename").textContent = currentFilename;
-    // Reset chat and restart tutor
+    // Reset chat, clear saved session, and restart tutor
     chatHistory = [];
     chatMessages.innerHTML = "";
     tutorStarted = false;
     lastAICode = "";
+    clearChatSession();
     startTutor();
 });
 
@@ -793,6 +957,7 @@ function getFormPayload() {
     if (provider === "anthropic") model = document.getElementById("set-anthropic-model").value || "claude-sonnet-4-20250514";
     if (provider === "openai") model = document.getElementById("set-openai-model").value || "gpt-4o";
     if (provider === "azure") model = document.getElementById("set-azure-deployment").value || "gpt-4o";
+    if (provider === "ollama") model = document.getElementById("set-ollama-model").value || "llama3";
 
     return {
         provider,
@@ -802,6 +967,8 @@ function getFormPayload() {
         azure_endpoint: document.getElementById("set-azure-endpoint").value.trim(),
         azure_deployment: document.getElementById("set-azure-deployment").value.trim(),
         azure_api_version: document.getElementById("set-azure-version").value.trim() || "2024-02-01",
+        ollama_model: provider === "ollama" ? (document.getElementById("set-ollama-model").value || "llama3") : "",
+        ollama_url: "http://localhost:11434",
         selected_model: model,
     };
 }
@@ -820,6 +987,8 @@ function preValidateKey(payload) {
         if (!payload.azure_api_key) return "Please enter your Azure API key.";
         if (!payload.azure_endpoint) return "Please enter your Azure endpoint URL.";
         if (payload.azure_api_key.length < 20) return "That Azure API key looks too short. Please check and try again.";
+    } else if (p === "ollama") {
+        // No key needed — validation checks if Ollama is running
     }
     return null;
 }
@@ -883,12 +1052,13 @@ async function checkExistingConnection() {
     const hasKey =
         (provider === "anthropic" && s.anthropic_api_key) ||
         (provider === "openai" && s.openai_api_key) ||
-        (provider === "azure" && s.azure_api_key && s.azure_endpoint);
+        (provider === "azure" && s.azure_api_key && s.azure_endpoint) ||
+        (provider === "ollama");
 
     if (!hasKey) return;
 
     // Key exists in local storage — show connected immediately without re-validating
-    const providerName = { anthropic: "Claude", openai: "ChatGPT", azure: "Azure" }[provider] || provider;
+    const providerName = { anthropic: "Claude", openai: "ChatGPT", azure: "Azure", ollama: "Ollama (Local)" }[provider] || provider;
     setConnectionStatus("connected", `Connected to ${providerName}`);
     aiConnected = true;
     startTutor();
@@ -903,7 +1073,38 @@ function showProviderFields(provider) {
     document.getElementById(`${provider}-fields`).classList.remove("hidden");
 }
 
-setProvider.addEventListener("change", () => showProviderFields(setProvider.value));
+setProvider.addEventListener("change", () => {
+    showProviderFields(setProvider.value);
+    if (setProvider.value === "ollama") detectOllamaModels();
+});
+
+async function detectOllamaModels() {
+    var statusEl = document.getElementById("ollama-status");
+    var selectEl = document.getElementById("set-ollama-model");
+    statusEl.textContent = "Checking Ollama...";
+    try {
+        var res = await fetch("/api/ollama/status");
+        var data = await res.json();
+        if (data.available && data.models.length > 0) {
+            statusEl.textContent = "Ollama is running (" + data.models.length + " model" + (data.models.length > 1 ? "s" : "") + " available)";
+            selectEl.innerHTML = "";
+            var savedModel = settings.ollama_model || "";
+            data.models.forEach(function (m) {
+                var opt = document.createElement("option");
+                opt.value = m;
+                opt.textContent = m;
+                if (m === savedModel) opt.selected = true;
+                selectEl.appendChild(opt);
+            });
+        } else if (data.available) {
+            statusEl.textContent = "Ollama is running but no models installed. Run: ollama pull llama3";
+        } else {
+            statusEl.textContent = "Ollama not detected. Install from ollama.com and run: ollama serve";
+        }
+    } catch (e) {
+        statusEl.textContent = "Could not check Ollama status.";
+    }
+}
 
 document.getElementById("btn-settings").addEventListener("click", () => {
     setProvider.value = settings.selected_provider || "anthropic";
@@ -920,6 +1121,9 @@ document.getElementById("btn-settings").addEventListener("click", () => {
 
     // Reset validation display
     document.getElementById("validation-result").classList.add("hidden");
+
+    // Detect Ollama models if Ollama is selected or available
+    detectOllamaModels();
 
     // Tutor settings
     var ageSlider = document.getElementById("set-learner-age");
@@ -1003,6 +1207,8 @@ document.getElementById("btn-save-settings").addEventListener("click", async () 
             azure_endpoint: payload.azure_endpoint,
             azure_deployment: payload.azure_deployment,
             azure_api_version: payload.azure_api_version,
+            ollama_model: payload.ollama_model || "",
+            ollama_url: payload.ollama_url || "http://localhost:11434",
             selected_provider: payload.provider,
             selected_model: payload.selected_model,
             learner_age: ageVal,

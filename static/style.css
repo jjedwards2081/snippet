@@ -321,6 +321,64 @@ html, body {
     100% { height: 10px; }
 }
 
+/* Progress panel */
+.progress-panel {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px;
+    overflow-y: auto;
+    max-height: 180px;
+    transition: max-height 0.3s;
+}
+
+.progress-panel.hidden {
+    display: none;
+}
+
+.progress-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.progress-count {
+    font-size: 11px;
+    color: var(--ms-blue);
+    font-weight: 700;
+}
+
+.progress-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.progress-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-base);
+    color: var(--text-muted);
+    transition: all 0.3s;
+    cursor: default;
+    white-space: nowrap;
+}
+
+.progress-badge.learned {
+    background: rgba(63, 185, 80, 0.15);
+    border-color: rgba(63, 185, 80, 0.4);
+    color: var(--ms-green);
+}
+
+.progress-badge.learned::before {
+    content: "\2714 ";
+}
+
 /* Clickable coding terms */
 .coding-term {
     color: #569CD6;

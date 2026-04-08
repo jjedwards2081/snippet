@@ -197,6 +197,21 @@ async def validate_key(req: ValidateRequest):
             )
             return {"valid": True}
 
+        elif req.provider == "ollama":
+            import httpx
+            try:
+                async with httpx.AsyncClient(timeout=5) as client:
+                    r = await client.get("http://localhost:11434/api/tags")
+                    if r.status_code == 200:
+                        models = [m["name"] for m in r.json().get("models", [])]
+                        if models:
+                            return {"valid": True}
+                        else:
+                            return {"valid": False, "error": "Ollama is running but no models are installed. Run: ollama pull llama3"}
+                return {"valid": False, "error": "Ollama not responding"}
+            except Exception:
+                return {"valid": False, "error": "Cannot connect to Ollama. Is it running? Start it with: ollama serve"}
+
         else:
             return {"valid": False, "error": f"Unknown provider: {req.provider}"}
 
@@ -313,10 +328,20 @@ If the student wants help with existing code:
 ## RESPONSE FORMAT
 You MUST respond with valid JSON only. No text outside the JSON. Format:
 
-{"message": "Your chat message here", "code": null}
+{"message": "Your chat message here", "code": null, "concepts": []}
 
 - "message": Your conversational text (explanation, question, praise). Keep it concise and friendly. Use simple language appropriate for students.
 - "code": Either null (no code update) OR a complete Python script string that replaces the entire editor content. When you update code, include ALL the code built so far, not just the new part. Always include helpful comments with # explaining what each section does.
+- "concepts": A list of concept IDs the student has just demonstrated understanding of in this exchange. Only include a concept when the student has answered correctly or shown they understand it. Use ONLY these exact IDs:
+  "variables", "strings", "numbers", "booleans", "lists",
+  "if_else", "for_loops", "while_loops",
+  "functions", "parameters", "return_values",
+  "events", "chat_commands",
+  "player_api", "blocks_api", "mobs_api", "agent_api", "builder_api",
+  "positions", "coordinates",
+  "operators", "comparison", "boolean_logic",
+  "comments", "debugging"
+  Return an empty list [] if no new concept was demonstrated.
 
 ## IMPORTANT RULES FOR CODE
 - Code MUST follow MakeCode Python precisely. Reference the guide below.
@@ -373,6 +398,8 @@ async def chat(req: ChatRequest):
         return await _chat_openai(req.messages, chat_settings)
     elif req.provider == "azure":
         return await _chat_azure(req.messages, chat_settings)
+    elif req.provider == "ollama":
+        return await _chat_ollama(req.messages, chat_settings)
     else:
         raise HTTPException(400, f"Unknown provider: {req.provider}")
 
@@ -453,6 +480,50 @@ async def _chat_azure(messages: list[dict], settings: dict):
         messages=full_messages,
     )
     return {"reply": response.choices[0].message.content}
+
+
+async def _chat_ollama(messages: list[dict], settings: dict):
+    import httpx
+
+    ollama_url = settings.get("ollama_url", "http://localhost:11434").strip().rstrip("/")
+    ollama_model = settings.get("ollama_model", "llama3").strip()
+
+    learner_age = settings.get("learner_age", 10)
+    verbosity = settings.get("verbosity", 1)
+    system_prompt = get_system_prompt(learner_age, verbosity)
+
+    full_messages = [{"role": "system", "content": system_prompt}]
+    for m in messages:
+        if m["role"] != "system":
+            full_messages.append(m)
+
+    try:
+        async with httpx.AsyncClient(timeout=120) as client:
+            r = await client.post(
+                f"{ollama_url}/api/chat",
+                json={"model": ollama_model, "messages": full_messages, "stream": False},
+            )
+            if r.status_code != 200:
+                raise HTTPException(500, f"Ollama error: {r.text}")
+            data = r.json()
+            return {"reply": data["message"]["content"]}
+    except httpx.ConnectError:
+        raise HTTPException(400, "Cannot connect to Ollama. Is it running? (ollama serve)")
+
+
+@app.get("/api/ollama/status")
+async def ollama_status():
+    """Check if Ollama is running and list available models."""
+    import httpx
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            r = await client.get("http://localhost:11434/api/tags")
+            if r.status_code == 200:
+                models = [m["name"] for m in r.json().get("models", [])]
+                return {"available": True, "models": models}
+    except Exception:
+        pass
+    return {"available": False, "models": []}
 
 
 # --- File System Browsing ---

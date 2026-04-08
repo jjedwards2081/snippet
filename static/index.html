@@ -30,7 +30,14 @@
     <div class="main">
         <!-- Left: Chat -->
         <div class="panel chat-panel">
-            <div class="panel-header">Minecraft Education Python Tutor</div>
+            <div class="panel-header">
+                Minecraft Education Python Tutor
+                <button id="btn-progress" class="copy-btn" title="Show/hide progress">Progress</button>
+            </div>
+            <div id="progress-panel" class="progress-panel hidden">
+                <div class="progress-title">My Learning Progress <span id="progress-count" class="progress-count">0/23</span></div>
+                <div class="progress-grid" id="progress-grid"></div>
+            </div>
             <div id="chat-messages" class="chat-messages"></div>
             <div class="chat-input-area">
                 <textarea id="chat-input" placeholder="Type your answer..." rows="3"></textarea>
@@ -63,6 +70,7 @@
                     <option value="anthropic">Anthropic (Claude)</option>
                     <option value="openai">OpenAI (ChatGPT)</option>
                     <option value="azure">Azure Foundry</option>
+                    <option value="ollama">Ollama (Local)</option>
                 </select>
 
                 <div id="anthropic-fields" class="provider-fields">
@@ -88,6 +96,15 @@
                     <input type="text" id="set-azure-deployment" placeholder="gpt-4o">
                     <label>API Version</label>
                     <input type="text" id="set-azure-version" placeholder="2024-02-01">
+                </div>
+
+                <div id="ollama-fields" class="provider-fields hidden">
+                    <label>Ollama Model</label>
+                    <select id="set-ollama-model">
+                        <option value="llama3">llama3</option>
+                    </select>
+                    <div id="ollama-status" class="age-hint">Checking Ollama status...</div>
+                    <div class="age-hint">Ollama runs locally — no API key needed. No text-to-speech with this provider.</div>
                 </div>
 
                 <div id="validation-result" class="validation-result hidden"></div>
@@ -213,6 +230,6 @@
         </div>
     </div>
 
-    <script src="/static/app.js?v7"></script>
+    <script src="/static/app.js?v10"></script>
 </body>
 </html>
