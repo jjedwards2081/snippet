@@ -104,7 +104,16 @@
                         <option value="llama3">llama3</option>
                     </select>
                     <div id="ollama-status" class="age-hint">Checking Ollama status...</div>
-                    <div class="age-hint">Ollama runs locally — no API key needed. No text-to-speech with this provider.</div>
+                    <div class="ollama-info">
+                        <strong>Setup Instructions</strong>
+                        <ol>
+                            <li>Download and install Ollama from <a href="https://ollama.com/download" target="_blank" rel="noopener" style="color:var(--ms-blue)">ollama.com/download</a></li>
+                            <li>Open Terminal and pull a model:<br><code>ollama pull llama3</code></li>
+                            <li>Start Ollama with browser access enabled:<br><code>OLLAMA_ORIGINS="*" ollama serve</code></li>
+                            <li>Come back here and click <strong>Test Connection</strong></li>
+                        </ol>
+                        <p><strong>Note:</strong> Ollama runs entirely on your device — no API key or internet needed for chat. However, response speed depends on your device hardware and may be slower than cloud providers. Text-to-speech is not available with Ollama.</p>
+                    </div>
                 </div>
 
                 <div id="validation-result" class="validation-result hidden"></div>
@@ -215,6 +224,17 @@
                     </ol>
                 </div>
 
+                <div class="about-provider">
+                    <h4>Ollama (Local LLM)</h4>
+                    <ol>
+                        <li>Download and install Ollama from <a href="https://ollama.com/download" target="_blank" rel="noopener" style="color:var(--ms-blue)">ollama.com/download</a></li>
+                        <li>Open Terminal and pull a model: <code>ollama pull llama3</code></li>
+                        <li>Start Ollama with browser access: <code>OLLAMA_ORIGINS="*" ollama serve</code></li>
+                        <li>In Snippet, click <strong>Settings</strong>, select <strong>Ollama (Local)</strong>, choose your model, and click <strong>Save</strong></li>
+                    </ol>
+                    <p style="font-size:12px;color:var(--ms-yellow);margin-top:6px">Note: Ollama runs on your device — speed depends on your hardware. No API key or internet required for chat. Text-to-speech is not available with this provider.</p>
+                </div>
+
                 <h3>Privacy</h3>
                 <p>This application is subject to the <a href="https://www.microsoft.com/en-us/privacy/privacystatement" target="_blank" rel="noopener" style="color:var(--ms-blue)">Microsoft Privacy Statement</a>.</p>
 
@@ -230,6 +250,6 @@
         </div>
     </div>
 
-    <script src="/static/app.js?v11"></script>
+    <script src="/static/app.js?v12"></script>
 </body>
 </html>
