@@ -241,7 +241,6 @@ async function proceedAfterTerms() {
     if (stored && stored.selected_provider) {
         settings = stored;
     }
-    trackVisit();
     await checkExistingConnection();
     if (!aiConnected) {
         showWelcomeMessage();
@@ -262,16 +261,6 @@ async function loadSettings() {
     await proceedAfterTerms();
 }
 loadSettings();
-
-// --- Track visit (sends provider once settings are loaded) ---
-async function trackVisit() {
-    var provider = settings.selected_provider || "";
-    fetch("/api/track", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider: provider }),
-    }).catch(function () {});
-}
 
 // --- Chat ---
 const chatMessages = document.getElementById("chat-messages");
@@ -820,7 +809,8 @@ document.getElementById("btn-new").addEventListener("click", () => {
     startTutor();
 });
 
-// --- File Browser ---
+// --- (File browser removed) ---
+/*
 const fileModal = document.getElementById("file-modal");
 const fileList = document.getElementById("file-list");
 const pathInput = document.getElementById("path-input");
@@ -1004,6 +994,8 @@ document.getElementById("btn-desktop").addEventListener("click", async () => {
     const data = await res.json();
     browseTo(data.home + "/Desktop");
 });
+
+*/
 
 // Close modal on backdrop click
 document.querySelectorAll(".modal-backdrop").forEach((el) => {

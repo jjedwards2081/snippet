@@ -1,12 +1,10 @@
 import json
 import os
 import tempfile
-import sqlite3
-from datetime import datetime, timedelta
 from pathlib import Path
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, Response, HTMLResponse
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -26,49 +24,6 @@ class NoCacheMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(NoCacheMiddleware)
-
-# --- Analytics Database ---
-ANALYTICS_DB = Path("analytics.db")
-
-
-def init_analytics_db():
-    conn = sqlite3.connect(str(ANALYTICS_DB))
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS visits (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp TEXT NOT NULL,
-            date TEXT NOT NULL,
-            ip TEXT,
-            country TEXT,
-            city TEXT,
-            lat REAL,
-            lon REAL,
-            user_agent TEXT,
-            provider TEXT DEFAULT ''
-        )
-    """)
-    # Migrate: add provider column if missing (existing DBs)
-    try:
-        conn.execute("ALTER TABLE visits ADD COLUMN provider TEXT DEFAULT ''")
-    except sqlite3.OperationalError:
-        pass
-    conn.commit()
-    conn.close()
-
-
-init_analytics_db()
-
-
-def record_visit(ip: str, user_agent: str, geo: dict, provider: str = ""):
-    now = datetime.utcnow()
-    conn = sqlite3.connect(str(ANALYTICS_DB))
-    conn.execute(
-        "INSERT INTO visits (timestamp, date, ip, country, city, lat, lon, user_agent, provider) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        (now.isoformat(), now.strftime("%Y-%m-%d"), ip, geo.get("country", ""),
-         geo.get("city", ""), geo.get("lat"), geo.get("lon"), user_agent, provider),
-    )
-    conn.commit()
-    conn.close()
 
 SETTINGS_FILE = Path("settings.json")
 HOME_DIR = Path.home()
@@ -679,106 +634,6 @@ async def text_to_speech(req: TTSRequest):
             audio_data += chunk["data"]
 
     return Response(content=audio_data, media_type="audio/mpeg")
-
-
-# --- Analytics ---
-
-class TrackRequest(BaseModel):
-    provider: str = ""
-
-
-@app.post("/api/track")
-async def track_visit(request: Request):
-    """Record a page visit with IP-based geolocation and provider."""
-    ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "")
-    if ip:
-        ip = ip.split(",")[0].strip()
-    user_agent = request.headers.get("user-agent", "")
-
-    # Try to read provider from JSON body
-    provider = ""
-    try:
-        body = await request.json()
-        provider = body.get("provider", "")
-    except Exception:
-        pass
-
-    # Geolocate IP using free API
-    geo = {}
-    try:
-        import httpx
-        async with httpx.AsyncClient(timeout=3) as client:
-            r = await client.get(f"http://ip-api.com/json/{ip}?fields=country,city,lat,lon,status")
-            if r.status_code == 200:
-                data = r.json()
-                if data.get("status") == "success":
-                    geo = data
-    except Exception:
-        pass
-
-    record_visit(ip, user_agent, geo, provider)
-    return {"status": "ok"}
-
-
-@app.get("/api/analytics")
-def get_analytics():
-    """Return analytics data for the reporting dashboard."""
-    conn = sqlite3.connect(str(ANALYTICS_DB))
-    conn.row_factory = sqlite3.Row
-    now = datetime.utcnow()
-    today = now.strftime("%Y-%m-%d")
-    week_ago = (now - timedelta(days=7)).strftime("%Y-%m-%d")
-    month_ago = (now - timedelta(days=30)).strftime("%Y-%m-%d")
-
-    # DAU — unique IPs today
-    dau = conn.execute("SELECT COUNT(DISTINCT ip) as c FROM visits WHERE date = ?", (today,)).fetchone()["c"]
-
-    # WAU — unique IPs in last 7 days
-    wau = conn.execute("SELECT COUNT(DISTINCT ip) as c FROM visits WHERE date >= ?", (week_ago,)).fetchone()["c"]
-
-    # MAU — unique IPs in last 30 days
-    mau = conn.execute("SELECT COUNT(DISTINCT ip) as c FROM visits WHERE date >= ?", (month_ago,)).fetchone()["c"]
-
-    # Total visits
-    total = conn.execute("SELECT COUNT(*) as c FROM visits").fetchone()["c"]
-
-    # Daily visits for last 30 days
-    daily = conn.execute(
-        "SELECT date, COUNT(*) as visits, COUNT(DISTINCT ip) as unique_users FROM visits WHERE date >= ? GROUP BY date ORDER BY date",
-        (month_ago,)
-    ).fetchall()
-    daily_data = [{"date": r["date"], "visits": r["visits"], "unique_users": r["unique_users"]} for r in daily]
-
-    # Locations — unique cities with count and coordinates
-    locations = conn.execute(
-        "SELECT country, city, lat, lon, COUNT(*) as visits, COUNT(DISTINCT ip) as users FROM visits WHERE lat IS NOT NULL AND country != '' GROUP BY country, city ORDER BY visits DESC LIMIT 100"
-    ).fetchall()
-    location_data = [{"country": r["country"], "city": r["city"], "lat": r["lat"], "lon": r["lon"], "visits": r["visits"], "users": r["users"]} for r in locations]
-
-    # Top countries
-    countries = conn.execute(
-        "SELECT country, COUNT(DISTINCT ip) as users FROM visits WHERE country != '' GROUP BY country ORDER BY users DESC LIMIT 20"
-    ).fetchall()
-    country_data = [{"country": r["country"], "users": r["users"]} for r in countries]
-
-    # Provider usage
-    providers = conn.execute(
-        "SELECT provider, COUNT(*) as visits, COUNT(DISTINCT ip) as users FROM visits WHERE provider != '' GROUP BY provider ORDER BY users DESC"
-    ).fetchall()
-    provider_data = [{"provider": r["provider"], "visits": r["visits"], "users": r["users"]} for r in providers]
-
-    conn.close()
-
-    return {
-        "dau": dau, "wau": wau, "mau": mau, "total_visits": total,
-        "daily": daily_data, "locations": location_data, "countries": country_data,
-        "providers": provider_data,
-    }
-
-
-@app.get("/reporting")
-def reporting_page():
-    return FileResponse("static/reporting.html")
 
 
 # --- Static files ---

@@ -19,8 +19,6 @@
                 <span class="status-text">Not connected</span>
             </div>
             <button id="btn-new" class="topbar-btn" title="New Script">New</button>
-            <button id="btn-save" class="topbar-btn" title="Save Script">Save</button>
-            <button id="btn-load" class="topbar-btn" title="Load Script">Load</button>
             <button id="btn-settings" class="topbar-btn" title="Settings">Settings</button>
             <button id="btn-credential" class="topbar-btn" title="Generate certificate">Credential</button>
             <button id="btn-about" class="topbar-btn" title="About">About</button>
@@ -188,30 +186,6 @@
         </div>
     </div>
 
-    <!-- File Browser Modal (used for both Load and Save) -->
-    <div id="file-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content modal-content-wide">
-            <h2 id="file-modal-title">Open File</h2>
-            <div class="path-bar">
-                <button id="btn-up" class="btn-icon" title="Go up">&#8593; Up</button>
-                <button id="btn-home" class="btn-icon" title="Go to Home">Home</button>
-                <button id="btn-documents" class="btn-icon" title="Go to Documents">Documents</button>
-                <button id="btn-desktop" class="btn-icon" title="Go to Desktop">Desktop</button>
-                <input type="text" id="path-input" class="path-input" readonly>
-            </div>
-            <div id="file-list" class="file-list"></div>
-            <div id="save-bar" class="save-bar hidden">
-                <label>Filename</label>
-                <input type="text" id="save-filename" placeholder="my_script.py">
-            </div>
-            <div class="modal-actions">
-                <button id="btn-file-action" class="btn-primary">Open</button>
-                <button id="btn-file-cancel" class="btn-secondary">Cancel</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Credential Modal -->
     <div id="credential-modal" class="modal hidden">
         <div class="modal-backdrop"></div>
@@ -299,6 +273,6 @@
         </div>
     </div>
 
-    <script src="/static/app.js?v18"></script>
+    <script src="/static/app.js?v19"></script>
 </body>
 </html>
