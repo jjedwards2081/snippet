@@ -103,6 +103,10 @@ class Settings(BaseModel):
     selected_model: str = "claude-sonnet-4-20250514"
     learner_age: int = 10
     verbosity: int = 1
+    challenge_freq: int = 3
+    fillblank_freq: int = 4
+    praise_level: int = 2
+    progress_pace: int = 1
 
 
 # --- Settings ---
@@ -237,7 +241,7 @@ if BLOCKS_REF_PATH.exists():
             _sections.append(f"### {label}\n{', '.join(constants)}")
     BLOCKS_REF = "\n\n".join(_sections)
 
-def get_system_prompt(learner_age: int = 10, verbosity: int = 1) -> str:
+def get_system_prompt(learner_age: int = 10, verbosity: int = 1, challenge_freq: int = 3, fillblank_freq: int = 4, praise_level: int = 2, progress_pace: int = 2) -> str:
     if learner_age <= 9:
         age_instructions = """## LANGUAGE LEVEL (Age 8-9)
 - Use very simple, short sentences. Imagine you are talking to a young child.
@@ -308,6 +312,23 @@ If the student wants to learn to code:
    - If incorrect: give a gentle hint and ask again. Never make the student feel bad.
 4. Build the code incrementally — each correct answer adds or modifies a small piece.
 5. Add clear comments to the code explaining what each part does.
+6. **Connect new concepts to ones already learned.** When the student's progress is provided, reference their prior knowledge to introduce new ideas. For example: "Remember when we created a function for our chat command? Now we're going to use a loop inside that function to repeat an action." This builds understanding by linking new concepts to familiar ones. Keep these connections brief and natural — one sentence is enough.
+7. **Mini challenges.** After teaching a new concept (every """ + str(challenge_freq) + """ steps), present a small "Can you try this?" challenge. The flow is:
+   - Update the code in the editor with the current working version.
+   - Then ask the student to make a specific small modification themselves. Be very specific about what to change. For example: "Can you try changing the loop so it spawns 10 chickens instead of 5? Edit the code in the editor and send me a message when you're done."
+   - Do NOT include the answer in the code update. Let the student edit the code themselves.
+   - When the student says they're done, check their code (it will be in the [Current code in editor] context). If correct, praise them enthusiastically. If incorrect, give a gentle hint and let them try again.
+   - Keep challenges simple and achievable — one small change at a time. Examples: change a number, add a player.say(), change a block type, add one more line inside a loop, change a chat command name.
+8. **Fill in the blank.** Occasionally (every """ + str(fillblank_freq) + """ steps, alternating with mini challenges), present a fill-in-the-blank exercise. The flow is:
+   - Put code in the editor that has `___` placeholders where key parts should go. Use exactly three underscores `___` as the placeholder.
+   - Add a comment next to each blank hinting at what goes there. For example:
+     ```
+     def on_chat_build():
+         blocks.fill(___, pos(0, 0, 0), pos(5, 5, 5), ___)  # What block? What fill operation?
+     ```
+   - In your message, explain what the code does and ask the student to replace the `___` placeholders with the correct values. List what each blank needs.
+   - When the student says they're done, check if they replaced all `___` with correct values. Praise correct answers. For incorrect ones, hint at the right answer and let them try again.
+   - Keep it to 1-3 blanks per exercise. The blanks should test the concept just taught.
 
 ### MODE 2: Help with Code (Review Mode)
 If the student wants help with existing code:
@@ -342,6 +363,14 @@ You MUST respond with valid JSON only. No text outside the JSON. Format:
   "operators", "comparison", "boolean_logic",
   "comments", "debugging"
   Return an empty list [] if no new concept was demonstrated.
+
+""" + (
+        "  **PROGRESS PACE: SLOW.** Be very thorough before marking a concept as learned. The student must demonstrate understanding at least THREE times before you add a concept to the list: (1) answer a question about the concept correctly, (2) successfully complete a mini challenge or fill-in-the-blank using the concept, AND (3) explain in their own words what the concept does or use it correctly in a different context. Do NOT mark a concept learned after a single correct answer. Ask follow-up questions to verify deep understanding, such as 'Can you explain why we used a loop there?' or 'What would happen if we changed this to a different value?'"
+        if progress_pace == 1
+        else "  **PROGRESS PACE: FAST.** Mark a concept as learned after the student demonstrates basic understanding once — a single correct answer or successful code modification is enough."
+        if progress_pace == 3
+        else "  **PROGRESS PACE: NORMAL.** Mark a concept as learned after the student demonstrates understanding twice — for example, answering a question correctly AND completing a mini challenge or fill-in-the-blank that uses the concept. One correct answer alone is not enough; ask a follow-up to confirm understanding before adding the concept."
+    ) + """
 
 ## IMPORTANT RULES FOR CODE
 - Code MUST follow MakeCode Python precisely. Reference the guide below.
@@ -382,6 +411,21 @@ Remember: ONLY output valid JSON. No markdown, no extra text.
         "## RESPONSE LENGTH: BRIEF\nKeep your messages very short — 1-2 sentences max per response. Get straight to the point. Ask one short question." if verbosity == 1
         else "## RESPONSE LENGTH: DETAILED\nGive thorough explanations with 4-6 sentences. Provide extra context, examples, and tips. Still ask a question at the end." if verbosity == 3
         else "## RESPONSE LENGTH: NORMAL\nUse 2-3 sentences per response. Explain the concept, then ask a question."
+    ) + "\n\n" + (
+        "## ENCOURAGEMENT LEVEL: MINIMAL\nKeep praise brief and matter-of-fact. A simple 'Correct.' or 'That's right.' is enough. Focus on the content, not celebration." if praise_level == 1
+        else "## ENCOURAGEMENT LEVEL: ENTHUSIASTIC\nBe very encouraging and celebratory! Use phrases like 'Amazing work!', 'You're really getting the hang of this!', 'That's absolutely brilliant!'. Celebrate every correct answer with genuine enthusiasm. Make the student feel like a coding superstar." if praise_level == 3
+        else "## ENCOURAGEMENT LEVEL: NORMAL\nBe positive and encouraging. Praise correct answers with 'Well done!', 'Great job!', 'Exactly right!'. Be warm but not over the top."
+    )
+
+
+def _build_prompt(settings: dict) -> str:
+    return get_system_prompt(
+        learner_age=settings.get("learner_age", 10),
+        verbosity=settings.get("verbosity", 1),
+        challenge_freq=settings.get("challenge_freq", 3),
+        fillblank_freq=settings.get("fillblank_freq", 4),
+        praise_level=settings.get("praise_level", 2),
+        progress_pace=settings.get("progress_pace", 1),
     )
 
 
@@ -413,9 +457,7 @@ async def _chat_anthropic(messages: list[dict], settings: dict):
 
     client = anthropic.Anthropic(api_key=api_key)
 
-    learner_age = settings.get("learner_age", 10)
-    verbosity = settings.get("verbosity", 1)
-    system_msg = get_system_prompt(learner_age, verbosity)
+    system_msg = _build_prompt(settings)
     chat_messages = []
     for m in messages:
         if m["role"] == "system":
@@ -441,9 +483,7 @@ async def _chat_openai(messages: list[dict], settings: dict):
 
     client = OpenAI(api_key=api_key)
     # Inject system prompt as first message
-    learner_age = settings.get("learner_age", 10)
-    verbosity = settings.get("verbosity", 1)
-    full_messages = [{"role": "system", "content": get_system_prompt(learner_age, verbosity)}]
+    full_messages = [{"role": "system", "content": _build_prompt(settings)}]
     for m in messages:
         if m["role"] != "system":
             full_messages.append(m)
@@ -468,9 +508,7 @@ async def _chat_azure(messages: list[dict], settings: dict):
         api_version=settings.get("azure_api_version", "2024-02-01"),
         azure_endpoint=endpoint,
     )
-    learner_age = settings.get("learner_age", 10)
-    verbosity = settings.get("verbosity", 1)
-    full_messages = [{"role": "system", "content": get_system_prompt(learner_age, verbosity)}]
+    full_messages = [{"role": "system", "content": _build_prompt(settings)}]
     for m in messages:
         if m["role"] != "system":
             full_messages.append(m)
@@ -488,9 +526,7 @@ async def _chat_ollama(messages: list[dict], settings: dict):
     ollama_url = settings.get("ollama_url", "http://localhost:11434").strip().rstrip("/")
     ollama_model = settings.get("ollama_model", "llama3").strip()
 
-    learner_age = settings.get("learner_age", 10)
-    verbosity = settings.get("verbosity", 1)
-    system_prompt = get_system_prompt(learner_age, verbosity)
+    system_prompt = _build_prompt(settings)
 
     full_messages = [{"role": "system", "content": system_prompt}]
     for m in messages:
@@ -531,12 +567,16 @@ async def ollama_status():
 class SystemPromptRequest(BaseModel):
     learner_age: int = 10
     verbosity: int = 1
+    challenge_freq: int = 3
+    fillblank_freq: int = 4
+    praise_level: int = 2
+    progress_pace: int = 1
 
 
 @app.post("/api/system-prompt")
 def get_system_prompt_endpoint(req: SystemPromptRequest):
     """Return the system prompt for client-side Ollama calls."""
-    return {"prompt": get_system_prompt(req.learner_age, req.verbosity)}
+    return {"prompt": _build_prompt(req.model_dump())}
 
 
 def _safe_path(path_str: str) -> Path:

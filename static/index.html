@@ -22,6 +22,7 @@
             <button id="btn-save" class="topbar-btn" title="Save Script">Save</button>
             <button id="btn-load" class="topbar-btn" title="Load Script">Load</button>
             <button id="btn-settings" class="topbar-btn" title="Settings">Settings</button>
+            <button id="btn-credential" class="topbar-btn" title="Generate certificate">Credential</button>
             <button id="btn-about" class="topbar-btn" title="About">About</button>
         </div>
     </header>
@@ -32,7 +33,7 @@
         <div class="panel chat-panel">
             <div class="panel-header">
                 Minecraft Education Python Tutor
-                <button id="btn-progress" class="copy-btn" title="Show/hide progress">Progress</button>
+                <button id="btn-progress" class="copy-btn" title="Show/hide progress">My Progress</button>
             </div>
             <div id="progress-panel" class="progress-panel hidden">
                 <div class="progress-title">My Learning Progress <span id="progress-count" class="progress-count">0/23</span></div>
@@ -65,7 +66,7 @@
         <div class="modal-content">
             <h2>Settings</h2>
             <div class="settings-form">
-                <label>Provider</label>
+                <label>AI Provider</label>
                 <select id="set-provider">
                     <option value="anthropic">Anthropic (Claude)</option>
                     <option value="openai">OpenAI (ChatGPT)</option>
@@ -128,12 +129,40 @@
                 </div>
                 <div class="age-hint">Adjusts the language complexity of the tutor (8 = simplest, 16+ = advanced)</div>
 
+                <label>Progress Pace</label>
+                <div class="age-slider-row">
+                    <input type="range" id="set-pace" min="1" max="3" value="1" class="age-slider">
+                    <span id="pace-display" class="age-display">Normal</span>
+                </div>
+                <div class="age-hint">How quickly concepts are marked as learned (Slow = more validation, Fast = less)</div>
+
                 <label>Response Length</label>
                 <div class="age-slider-row">
                     <input type="range" id="set-verbosity" min="1" max="3" value="1" class="age-slider">
                     <span id="verbosity-display" class="age-display">Normal</span>
                 </div>
                 <div class="age-hint">How detailed the tutor's responses are (Brief, Normal, Detailed)</div>
+
+                <label>Mini Challenges</label>
+                <div class="age-slider-row">
+                    <input type="range" id="set-challenge-freq" min="1" max="5" value="3" class="age-slider">
+                    <span id="challenge-freq-display" class="age-display">Every 3 steps</span>
+                </div>
+                <div class="age-hint">How often the tutor asks you to modify code yourself (1 = every step, 5 = rarely)</div>
+
+                <label>Fill in the Blank</label>
+                <div class="age-slider-row">
+                    <input type="range" id="set-fillblank-freq" min="1" max="5" value="4" class="age-slider">
+                    <span id="fillblank-freq-display" class="age-display">Every 4 steps</span>
+                </div>
+                <div class="age-hint">How often the tutor presents ___ placeholder exercises (1 = every step, 5 = rarely)</div>
+
+                <label>Encouragement</label>
+                <div class="age-slider-row">
+                    <input type="range" id="set-praise" min="1" max="3" value="2" class="age-slider">
+                    <span id="praise-display" class="age-display">Normal</span>
+                </div>
+                <div class="age-hint">How much praise and reward the tutor gives (Minimal, Normal, Enthusiastic)</div>
 
                 <label>Chat Font Size</label>
                 <div class="font-size-row">
@@ -179,6 +208,26 @@
             <div class="modal-actions">
                 <button id="btn-file-action" class="btn-primary">Open</button>
                 <button id="btn-file-cancel" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credential Modal -->
+    <div id="credential-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <h2>Generate Credential</h2>
+            <div id="credential-no-progress" class="hidden">
+                <p style="color:var(--ms-yellow);padding:16px 0">You haven't completed any learning progress yet. Start a tutoring session and learn some concepts to unlock your credential.</p>
+            </div>
+            <div id="credential-form">
+                <label>Student Name</label>
+                <input type="text" id="credential-name" placeholder="Enter your full name">
+                <div id="credential-preview" class="credential-preview"></div>
+            </div>
+            <div class="modal-actions">
+                <button id="btn-generate-credential" class="btn-primary">Download PDF</button>
+                <button id="btn-cancel-credential" class="btn-secondary">Cancel</button>
             </div>
         </div>
     </div>
@@ -250,6 +299,6 @@
         </div>
     </div>
 
-    <script src="/static/app.js?v12"></script>
+    <script src="/static/app.js?v18"></script>
 </body>
 </html>

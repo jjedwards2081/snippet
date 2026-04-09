@@ -344,6 +344,10 @@ async function chatViaOllama(messages) {
         body: JSON.stringify({
             learner_age: settings.learner_age || 10,
             verbosity: settings.verbosity || 1,
+            challenge_freq: settings.challenge_freq || 3,
+            fillblank_freq: settings.fillblank_freq || 4,
+            praise_level: settings.praise_level || 2,
+            progress_pace: settings.progress_pace || 1,
         }),
     });
     var promptData = await promptRes.json();
@@ -634,13 +638,32 @@ async function sendTutorMessage(userText) {
         // Detect if the user has edited the code since the AI last set it
         const userEdited = lastAICode && editorContent !== lastAICode;
 
-        // Add editor context to the last user message if there is one
-        if (contextMessages.length > 0 && editorContent) {
+        // Add editor context and learned concepts to the last user message
+        if (contextMessages.length > 0) {
             const last = contextMessages[contextMessages.length - 1];
             if (last.role === "user") {
-                let context = "\n\n[Current code in editor:\n" + editorContent + "\n]";
+                let context = "";
+                if (editorContent) {
+                    context += "\n\n[Current code in editor:\n" + editorContent + "\n]";
+                }
                 if (userEdited) {
                     context += "\n[NOTE: The student has manually edited the code since your last update. Review their changes, acknowledge what they did, check if it is correct MakeCode Python, and incorporate their edits going forward. If they made a mistake, gently explain the issue and guide them to fix it. If their edits are good, praise them and build on their changes.]";
+                }
+                // Include learned concepts so the tutor can reference prior knowledge
+                var learned = [];
+                var notLearned = [];
+                for (var ci = 0; ci < ALL_CONCEPTS.length; ci++) {
+                    if (learnedConcepts[ALL_CONCEPTS[ci].id]) {
+                        learned.push(ALL_CONCEPTS[ci].label);
+                    } else {
+                        notLearned.push(ALL_CONCEPTS[ci].label);
+                    }
+                }
+                if (learned.length > 0) {
+                    context += "\n[STUDENT PROGRESS: The student has already learned these concepts: " + learned.join(", ") + ". When introducing a new concept, connect it to ones they already know — for example 'Remember when we used a variable? A loop lets us change that variable many times automatically.' This helps build understanding by linking new ideas to familiar ones.]";
+                }
+                if (notLearned.length > 0) {
+                    context += "\n[Concepts not yet learned: " + notLearned.join(", ") + "]";
                 }
                 last.content = last.content + context;
             }
@@ -1206,9 +1229,21 @@ document.getElementById("btn-settings").addEventListener("click", () => {
     var ageSlider = document.getElementById("set-learner-age");
     ageSlider.value = settings.learner_age || 10;
     updateAgeDisplay(ageSlider.value);
+    var paceSlider = document.getElementById("set-pace");
+    paceSlider.value = settings.progress_pace || 1;
+    updatePaceDisplay(paceSlider.value);
     var verbSlider = document.getElementById("set-verbosity");
     verbSlider.value = settings.verbosity || 1;
     updateVerbosityDisplay(verbSlider.value);
+    var challengeSlider = document.getElementById("set-challenge-freq");
+    challengeSlider.value = settings.challenge_freq || 3;
+    updateChallengeFreqDisplay(challengeSlider.value);
+    var fillblankSlider = document.getElementById("set-fillblank-freq");
+    fillblankSlider.value = settings.fillblank_freq || 4;
+    updateFillblankFreqDisplay(fillblankSlider.value);
+    var praiseSlider = document.getElementById("set-praise");
+    praiseSlider.value = settings.praise_level || 2;
+    updatePraiseDisplay(praiseSlider.value);
     document.getElementById("set-tts").checked = ttsEnabled;
     document.getElementById("font-size-display").textContent = chatFontSize + "px";
 
@@ -1232,6 +1267,42 @@ function updateVerbosityDisplay(val) {
 }
 document.getElementById("set-verbosity").addEventListener("input", function () {
     updateVerbosityDisplay(this.value);
+});
+
+// Progress pace slider
+var paceLabels = { 1: "More Depth", 2: "Normal", 3: "Fast" };
+function updatePaceDisplay(val) {
+    document.getElementById("pace-display").textContent = paceLabels[parseInt(val)] || "Normal";
+}
+document.getElementById("set-pace").addEventListener("input", function () {
+    updatePaceDisplay(this.value);
+});
+
+// Challenge frequency slider
+function updateChallengeFreqDisplay(val) {
+    var v = parseInt(val);
+    document.getElementById("challenge-freq-display").textContent = v === 1 ? "Every step" : v === 5 ? "Rarely" : "Every " + v + " steps";
+}
+document.getElementById("set-challenge-freq").addEventListener("input", function () {
+    updateChallengeFreqDisplay(this.value);
+});
+
+// Fill in blank frequency slider
+function updateFillblankFreqDisplay(val) {
+    var v = parseInt(val);
+    document.getElementById("fillblank-freq-display").textContent = v === 1 ? "Every step" : v === 5 ? "Rarely" : "Every " + v + " steps";
+}
+document.getElementById("set-fillblank-freq").addEventListener("input", function () {
+    updateFillblankFreqDisplay(this.value);
+});
+
+// Praise level slider
+var praiseLabels = { 1: "Minimal", 2: "Normal", 3: "Enthusiastic" };
+function updatePraiseDisplay(val) {
+    document.getElementById("praise-display").textContent = praiseLabels[parseInt(val)] || "Normal";
+}
+document.getElementById("set-praise").addEventListener("input", function () {
+    updatePraiseDisplay(this.value);
 });
 
 // Font size buttons
@@ -1277,6 +1348,10 @@ document.getElementById("btn-save-settings").addEventListener("click", async () 
         // Save settings encrypted in localStorage
         var ageVal = parseInt(document.getElementById("set-learner-age").value) || 10;
         var verbVal = parseInt(document.getElementById("set-verbosity").value) || 1;
+        var challengeVal = parseInt(document.getElementById("set-challenge-freq").value) || 3;
+        var fillblankVal = parseInt(document.getElementById("set-fillblank-freq").value) || 4;
+        var praiseVal = parseInt(document.getElementById("set-praise").value) || 2;
+        var paceVal = parseInt(document.getElementById("set-pace").value) || 2;
         const settingsPayload = {
             anthropic_api_key: payload.anthropic_api_key,
             openai_api_key: payload.openai_api_key,
@@ -1290,6 +1365,10 @@ document.getElementById("btn-save-settings").addEventListener("click", async () 
             selected_model: payload.selected_model,
             learner_age: ageVal,
             verbosity: verbVal,
+            challenge_freq: challengeVal,
+            fillblank_freq: fillblankVal,
+            praise_level: praiseVal,
+            progress_pace: paceVal,
         };
 
         saveSettingsToLocal(settingsPayload);
@@ -1307,6 +1386,118 @@ document.getElementById("btn-save-settings").addEventListener("click", async () 
 
 document.getElementById("btn-cancel-settings").addEventListener("click", () => {
     settingsModal.classList.add("hidden");
+});
+
+// --- Credential Modal ---
+document.getElementById("btn-credential").addEventListener("click", function () {
+    var learned = [];
+    for (var i = 0; i < ALL_CONCEPTS.length; i++) {
+        if (learnedConcepts[ALL_CONCEPTS[i].id]) {
+            learned.push(ALL_CONCEPTS[i]);
+        }
+    }
+
+    var noProgress = document.getElementById("credential-no-progress");
+    var form = document.getElementById("credential-form");
+    var genBtn = document.getElementById("btn-generate-credential");
+
+    if (learned.length === 0) {
+        noProgress.classList.remove("hidden");
+        form.classList.add("hidden");
+        genBtn.style.display = "none";
+    } else {
+        noProgress.classList.add("hidden");
+        form.classList.remove("hidden");
+        genBtn.style.display = "";
+
+        // Show preview of what will be on the credential
+        var preview = document.getElementById("credential-preview");
+        var groups = {};
+        for (var j = 0; j < learned.length; j++) {
+            var g = learned[j].group;
+            if (!groups[g]) groups[g] = [];
+            groups[g].push(learned[j].label);
+        }
+        var html = "<strong>" + learned.length + " of " + ALL_CONCEPTS.length + " concepts completed</strong><br><br>";
+        for (var group in groups) {
+            html += "<strong>" + group + ":</strong> " + groups[group].join(", ") + "<br>";
+        }
+        preview.innerHTML = html;
+    }
+
+    document.getElementById("credential-modal").classList.remove("hidden");
+});
+
+document.getElementById("btn-cancel-credential").addEventListener("click", function () {
+    document.getElementById("credential-modal").classList.add("hidden");
+});
+
+document.getElementById("btn-generate-credential").addEventListener("click", function () {
+    var name = document.getElementById("credential-name").value.trim();
+    if (!name) {
+        document.getElementById("credential-name").focus();
+        document.getElementById("credential-name").style.borderColor = "#F85149";
+        return;
+    }
+    document.getElementById("credential-name").style.borderColor = "";
+
+    var learned = [];
+    for (var i = 0; i < ALL_CONCEPTS.length; i++) {
+        if (learnedConcepts[ALL_CONCEPTS[i].id]) {
+            learned.push(ALL_CONCEPTS[i]);
+        }
+    }
+
+    var groups = {};
+    for (var j = 0; j < learned.length; j++) {
+        var g = learned[j].group;
+        if (!groups[g]) groups[g] = [];
+        groups[g].push(learned[j].label);
+    }
+
+    var today = new Date();
+    var dateStr = today.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+    var conceptsHtml = "";
+    for (var group in groups) {
+        conceptsHtml += '<div style="margin-bottom:8px"><strong style="color:#0078D4">' + group + '</strong><br>' + groups[group].join(" &bull; ") + "</div>";
+    }
+
+    var logoUrl = window.location.origin + "/images/education-minecraft-logo.avif";
+
+    var certHtml = '<!DOCTYPE html><html><head><title>Credential - ' + name + '</title><style>' +
+        '@page { size: A4 landscape; margin: 0; }' +
+        'body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 40px 60px; height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; background: white; color: #1a1a1a; }' +
+        '.header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }' +
+        '.header img { height: 50px; }' +
+        '.header-text { font-size: 13px; color: #666; }' +
+        '.title { text-align: center; font-size: 32px; font-weight: 700; color: #0078D4; margin: 16px 0 6px; }' +
+        '.subtitle { text-align: center; font-size: 16px; color: #444; margin-bottom: 20px; }' +
+        '.name { text-align: center; font-size: 28px; font-weight: 700; color: #1a1a1a; margin: 10px 0; padding: 10px 0; border-bottom: 2px solid #0078D4; border-top: 2px solid #0078D4; }' +
+        '.body { flex: 1; display: flex; flex-direction: column; justify-content: center; }' +
+        '.concepts { columns: 2; column-gap: 40px; font-size: 14px; line-height: 1.8; margin: 16px 0; }' +
+        '.summary { text-align: center; font-size: 15px; color: #333; margin: 16px 0; }' +
+        '.footer { text-align: center; font-size: 12px; color: #999; margin-top: auto; padding-top: 16px; border-top: 1px solid #ddd; }' +
+        '</style></head><body>' +
+        '<div class="header"><img src="' + logoUrl + '" alt="Minecraft Education"><div class="header-text">Minecraft Education<br>Python Coding Credential</div></div>' +
+        '<div class="title">Certificate of Achievement</div>' +
+        '<div class="subtitle">MakeCode Python for Minecraft Education</div>' +
+        '<div class="name">' + name + '</div>' +
+        '<div class="body">' +
+        '<div class="summary">Has demonstrated understanding of <strong>' + learned.length + ' of ' + ALL_CONCEPTS.length + '</strong> coding concepts</div>' +
+        '<div class="concepts">' + conceptsHtml + '</div>' +
+        '</div>' +
+        '<div class="footer">Issued on ' + dateStr + ' &bull; Snippet — Minecraft Education Python Tutor &bull; AI-assisted learning</div>' +
+        '</body></html>';
+
+    var printWindow = window.open("", "_blank");
+    printWindow.document.write(certHtml);
+    printWindow.document.close();
+    printWindow.onload = function () {
+        printWindow.print();
+    };
+
+    document.getElementById("credential-modal").classList.add("hidden");
 });
 
 // --- About Modal ---
